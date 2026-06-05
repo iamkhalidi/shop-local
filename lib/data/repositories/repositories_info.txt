@@ -1,0 +1,40 @@
+repositories: bridge between Controllers and API/DB 
+
+
+
+
+Controller (HomeController)
+        |
+        v
+Repository (ProductRepository)
+        |
+   --------------
+   |            |
+API Service   Local DB
+
+
+---
+
+
+[ProductsScreen]
+        |
+        v
+[ProductController] --> productController.getProducts()
+        |
+        v
+[ProductRepository] --> getProducts()
+        |
+        v
+[ProductAPI] --------> fetchProductsFromServer()
+
+
+--- 
+
+repositories/
+├── auth_repository.dart
+├── product_repository.dart
+└── order_repository.dart
+
+
+
+
