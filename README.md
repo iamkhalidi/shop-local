@@ -1,5 +1,8 @@
 # shop_local
 
+https://shop-local-4d81d.web.app/
+
+https://shop-local-4d81d.firebaseapp.com/
 
 
 
@@ -11,20 +14,27 @@
 *routes with binding in getx
 *profile
 *bottom nav bar
-user information "name-number-
-the number & email without repeating
-users collection in firebase
+*user information "name-number-
+*the number & email without repeating
+*users collection in firebase
 
+**ui
+*'home'
+*'cart'
+*'categories'
+*'products screen'
+*'product info screen'
 
-ui
-'home'
-'cart'
-'categories'
 
 logic
 'home'
 'cart'
 'categories'
+'products screen'
+'product info screen'
+
+pdf order information file 
+
 
 
 
