@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shop_local/features/home/view/home_screen.dart';
 
+import '../../auth/controller/auth_controller.dart';
+
 class SplashController extends GetxController with GetSingleTickerProviderStateMixin {
   late AnimationController animationController;
   late Animation<double> opacityAnimation;
@@ -41,10 +43,11 @@ class SplashController extends GetxController with GetSingleTickerProviderStateM
   }
 
   Future<void> navigateToHome() async {
-    // الانتظار لمدة 3 ثوانٍ (مدة ظهور الشاشة الكاملة)
+    // انتظر 3 ثوانٍ كاملة لعرض الشاشة والأنيميشن
     await Future.delayed(const Duration(seconds: 3));
-    // الانتقال للصفحة الرئيسية وإغلاق صفحة السبلاش
-    Get.off(() => const HomeScreen());
+
+    // استدعاء دالة الفحص التي أضفناها بالأعلى في الـ AuthController
+    Get.find<AuthController>().checkUserStatus();
   }
 
   @override

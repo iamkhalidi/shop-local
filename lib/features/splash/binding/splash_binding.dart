@@ -1,10 +1,12 @@
 import 'package:get/get.dart';
-import 'package:shop_local/features/splash/controller/splash_controller.dart';
+import '../../auth/controller/auth_controller.dart';
+import '../controller/splash_controller.dart';
 
 class SplashBinding extends Bindings {
   @override
   void dependencies() {
-    // يتم حقن الـ Controller هنا ليعمل مع الصفحة بشكل مستقل
-    Get.lazyPut<SplashController>(() => SplashController());
+    // يحقن مرة واحدة بشكل دائم لمنع التكرار واللوب
+    Get.put<AuthController>(AuthController(), permanent: true);
+    Get.put<SplashController>(SplashController());
   }
 }
