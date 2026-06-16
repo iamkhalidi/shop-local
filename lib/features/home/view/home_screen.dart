@@ -19,12 +19,22 @@ class HomeScreen extends GetView<HomeController> {
         elevation: 0,
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              Get.toNamed(Routes.PROFILE);
-            },
-          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: TextButton.icon(
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.blue, // لون النص والأيقونة عند الضغط
+              ),
+              icon: const Icon(Icons.person, color: Colors.blue), // أيقونة الحساب
+              label: const Text(
+                'الحساب',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.blue),
+              ), // الكلمة بجانب الأيقونة
+              onPressed: () {
+                Get.toNamed(Routes.PROFILE);
+              },
+            ),
+          )
         ],
       ),
       body: Padding(

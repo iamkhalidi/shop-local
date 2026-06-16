@@ -9,6 +9,7 @@ abstract class Routes {
   static const FORGOT_PASSWORD = _Paths.FORGOT_PASSWORD;
   static const HOME = _Paths.HOME;
   static const PROFILE = _Paths.PROFILE;
+  static const DASHBOARD = _Paths.DASHBOARD;
 }
 
 abstract class _Paths {
@@ -19,4 +20,5 @@ abstract class _Paths {
   static const FORGOT_PASSWORD = '/forgot-password';
   static const HOME = '/home';
   static const PROFILE = '/profile';
+  static const DASHBOARD = '/dashboard';
 }

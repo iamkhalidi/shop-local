@@ -1,16 +1,36 @@
 import 'package:get/get.dart';
-
 import '../../auth/controller/auth_controller.dart';
 
-
 class ProfileController extends GetxController {
-  // جلب نسخة الـ AuthController المستقرة في الذاكرة للوصول لبيانات المستخدم وتسجيل الخروج
   final AuthController _authController = Get.find<AuthController>();
 
-  // متغير للحصول على بريد المستخدم الحالي وعرضه في الشاشة
-  String get userEmail => _authController.firebaseUser.value?.email ?? "لا يوجد بريد إلكتروني";
+  // 📧 جلب البريد الإلكتروني
+  String get userEmail => _authController.firebaseUser.value?.email ?? "جاري تحميل البريد...";
 
-  // دالة تسجيل الخروج التي ستستدعى عند الضغط على الزر
+
+
+// 👤 جلب الاسم الكامل بعد فصله
+  String get userName {
+    final displayName = _authController.firebaseUser.value?.displayName ?? "";
+    if (displayName.contains('|')) {
+      return displayName.split('|')[0]; // يأخذ الجزء الأول وهو الاسم
+    }
+    return displayName.isNotEmpty ? displayName : "جاري تحميل الاسم...";
+  }
+
+
+
+
+
+// 📱 جلب رقم الجوال بعد فصله
+  String get userPhone {
+    final displayName = _authController.firebaseUser.value?.displayName ?? "";
+    if (displayName.contains('|')) {
+      return displayName.split('|')[1]; // يأخذ الجزء الثاني وهو الرقم
+    }
+    return "لم يتم ربط رقم الجوال";
+  }
+
   void logout() {
     _authController.signOut();
   }

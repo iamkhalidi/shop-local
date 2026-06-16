@@ -7,6 +7,8 @@ import 'package:shop_local/features/auth/view/login_screen.dart';
 import 'package:shop_local/features/auth/view/register_screen.dart';
 import 'package:shop_local/features/auth/view/forgot_password_screen.dart';
 
+import '../features/dashboard/binding/dashboard_binding.dart';
+import '../features/dashboard/view/dashboard_screen.dart';
 import '../features/profile/binding/profile_binding.dart';
 import '../features/profile/view/profile_screen.dart';
 
@@ -44,6 +46,11 @@ class AppPages {
       name: _Paths.PROFILE,
       page: () => const ProfileScreen(),
       binding: ProfileBinding(),
+    ),
+    GetPage(
+      name: _Paths.DASHBOARD,
+      page: () => const DashboardScreen(),
+      binding: DashboardBinding(),
     ),
   ];
 }
