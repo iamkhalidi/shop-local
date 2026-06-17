@@ -10,10 +10,6 @@ import 'features/auth/binding/auth_binding.dart'; // <--- أضفنا هذا ال
 void main() async {
   // للتأكد من تهيئة الـ Flutter Widgets قبل تشغيل أي شيء آخر
   WidgetsFlutterBinding.ensureInitialized();
-  if (kIsWeb) {
-    // يمنع المتصفح من التخمين ويجبره على تشغيل محرك متوافق مع الأيقونات
-    debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
-  }
 
   if (kIsWeb) {
     await Firebase.initializeApp(
