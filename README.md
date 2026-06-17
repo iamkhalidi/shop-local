@@ -1,7 +1,7 @@
 # shop_local
 
 https://shop-local-4d81d.web.app/
-
+https://iamkhalidi.github.io/
 https://shop-local-4d81d.firebaseapp.com/
 
 
