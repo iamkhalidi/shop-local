@@ -18,9 +18,11 @@ https://shop-local-4d81d.firebaseapp.com/
     *user information "name-number-
     *the number & email without repeating
     *users collection in firebase
-    *use Loading in login button
+use Loading in login 
+
     *when upload the tab put default link without /login .. for ex
-    remove default splash screen from web
+    //remove default splash screen from web
+    update home screen ui to make every category in row
     search feature in categories screen
     search feature in products screen
     Privacy Policy - The Rights is saved with [name] 2026 (C) + returning terms
