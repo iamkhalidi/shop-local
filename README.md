@@ -23,6 +23,7 @@ use Loading in login
     *when upload the tab put default link without /login .. for ex
     //remove default splash screen from web
     update home screen ui to make every category in row
+    cart logic
     search feature in categories screen
     search feature in products screen
     Privacy Policy - The Rights is saved with [name] 2026 (C) + returning terms
@@ -36,7 +37,7 @@ use Loading in login
     *'product info screen'
     
     logic
-    'home'
+    *'home'
     'cart' with icon(quantiti of items in cart) + shakaing when new item added
     *'categories'
     *'products screen'
