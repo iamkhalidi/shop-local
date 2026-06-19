@@ -37,7 +37,10 @@ void main() async {
     );
   } else {
     await Firebase.initializeApp();
+    // 👇 2. أضف هذا السطر هنا ليقوم بالرفع الذكي التلقائي فور تشغيل التطبيق
   }
+
+
   runApp(const MyApp());
 }
 

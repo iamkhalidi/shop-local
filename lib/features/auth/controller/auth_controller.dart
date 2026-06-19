@@ -134,7 +134,7 @@ class AuthController extends GetxController {
       case 'email-already-in-use': return 'هذا البريد الإلكتروني مستخدم بالفعل.';
       case 'invalid-email': return 'صيغة البريد الإلكتروني غير صحيحة.';
       case 'weak-password': return 'كلمة المرور ضعيفة جداً.';
-      default: return 'حدث خطأ غير متوقع، حاول مرة أخرى.';
+      default: return 'حدث خطأ غير متوقع، تأكد من المدخلات و حاول مرة أخرى.';
     }
   }
 

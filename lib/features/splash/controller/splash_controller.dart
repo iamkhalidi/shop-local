@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shop_local/features/home/view/home_screen.dart';
 
+import '../../../data/database/firestore_seeder.dart';
 import '../../auth/controller/auth_controller.dart';
 
 class SplashController extends GetxController with GetSingleTickerProviderStateMixin {
@@ -38,9 +39,27 @@ class SplashController extends GetxController with GetSingleTickerProviderStateM
     // بدء تشغيل الأنميشن
     animationController.forward();
 
+    // // 2. 🔥 تشغيل حقن البيانات في الخلفية فوراً عند فتح التطبيق
+    // injectDataOnStartup();
+
     // تشغيل مؤقت الانتقال إلى الصفحة الرئيسية
     navigateToHome();
   }
+
+
+  // // 👇 دالة مستقلة للحقن حتى لا تعطل الأنميشن أو الانتقال
+  // Future<void> injectDataOnStartup() async {
+  //   try {
+  //     print("⏳ [Seeder] بدأت عملية حقن البيانات من الـ SplashController خلف الكواليس...");
+  //     await FirestoreSeeder.seedAllGroceryData();
+  //     print("🏁 [Seeder] اكتملت محاولة حقن البيانات بنجاح.");
+  //   } catch (e) {
+  //     print("❌ [Seeder] فشل الحقن من الـ Splash بسبب: $e");
+  //   }
+  // }
+
+
+
 
   Future<void> navigateToHome() async {
     // انتظر 3 ثوانٍ كاملة لعرض الشاشة والأنيميشن

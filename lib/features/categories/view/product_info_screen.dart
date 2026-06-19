@@ -1,22 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../dashboard/controller/dashboard_controller.dart';
+import '../controller/products_controller.dart'; // استيراد الكنترولر الجديد للمنتجات
 
 class ProductInfoScreen extends GetView<DashboardController> {
   const ProductInfoScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // العثور على نسخة الـ ProductsController المفتوحة مسبقاً لجلب تفاصيل المنتج المختار
+    final ProductsController productsController = Get.find<ProductsController>();
+    final product = productsController.selectedProduct.value;
+
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('تفاصيل المنتج'),
+        title: const Text('تفاصيل المنتج', style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new),
-          onPressed: () => controller.goBackInCategories(), // الرجوع لصفحة المنتجات السابقة
+          onPressed: () => controller.goBackInCategories(), // الرجوع لصفحة المنتجات السابقة عبر دالتك الأصلية
         ),
       ),
-      body: Padding(
+      body: product == null
+          ? const Center(child: Text("لم يتم العثور على بيانات المنتج!"))
+          : Padding(
         padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 90.0),
         child: SingleChildScrollView(
           child: Column(
@@ -28,46 +39,93 @@ class ProductInfoScreen extends GetView<DashboardController> {
                 decoration: BoxDecoration(
                   color: Colors.grey[100],
                   borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.grey.withOpacity(0.2)),
                 ),
                 child: const Icon(Icons.insert_photo_outlined, size: 100, color: Colors.grey),
               ),
               const SizedBox(height: 20),
 
-              // اسم المنتج وسعره مستدعى برمجياً
-              Obx(() => Text(
-                controller.selectedProductName.value,
+              // اسم المنتج الحقيقي مستدعى برمجياً
+              Text(
+                product.name,
                 style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              )),
-              const SizedBox(height: 10),
-              Obx(() => Text(
-                controller.selectedProductPrice.value,
-                style: const TextStyle(fontSize: 18, color: Colors.blue, fontWeight: FontWeight.bold),
-              )),
+              ),
+              const SizedBox(height: 5),
 
-              const SizedBox(height: 20),
+              // الحجم والوزن الخاص بالمنتج
+              Text(
+                "الحجم / الوزن: ${product.sizeVolume > 0 ? product.sizeVolume : ''} ${product.unitType}",
+                style: const TextStyle(fontSize: 14, color: Colors.grey),
+              ),
+              const SizedBox(height: 10),
+
+              // السعر الحقيقي والقديم في حال وجود خصم
+              Row(
+                children: [
+                  Text(
+                    "${product.currentPrice} ريال",
+                    style: const TextStyle(fontSize: 20, color: Colors.blue, fontWeight: FontWeight.bold),
+                  ),
+                  if (product.hasDiscount) ...[
+                    const SizedBox(width: 15),
+                    Text(
+                      "${product.originalPrice} ريال",
+                      style: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.grey,
+                          decoration: TextDecoration.lineThrough
+                      ),
+                    ),
+                  ]
+                ],
+              ),
+              const Divider(height: 30, thickness: 1),
+
               const Text(
                 'وصف المنتج:',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'هذا النص هو مثال لوصف المنتج المستهدف. المنتج يتميز بجودة عالية وصناعة محلية ممتازة تناسب تطلعاتك وضمان الشراء الآمن.',
-                style: TextStyle(fontSize: 14, color: Colors.grey, height: 1.5),
+
+              // الوصف الحقيقي المجلوب من الفايربيس لكل صنف
+              Text(
+                product.description,
+                style: const TextStyle(fontSize: 14, color: Colors.black87, height: 1.5),
+              ),
+              const SizedBox(height: 20),
+
+              // عرض كمية المخزون المتبقية لتعطي موثوقية للتطبيق
+              Row(
+                children: [
+                  const Icon(Icons.storefront, size: 18, color: Colors.grey),
+                  const SizedBox(width: 6),
+                  Text(
+                    "الالكمية المتاحة في المخزن: ${product.stockQuantity}",
+                    style: const TextStyle(fontSize: 13, color: Colors.blueGrey),
+                  ),
+                ],
               ),
               const SizedBox(height: 30),
 
-              // زر إضافة إلى السلة
+              // زر إضافة إلى السلة الديناميكي بحسب المخزن
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: product.stockQuantity <= 0 ? Colors.grey : Colors.blue,
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 15),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                icon: const Icon(Icons.add_shopping_cart),
-                label: const Text('إضافة إلى السلة', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                onPressed: () {
+                icon: const Icon(Icons.add_shopping_cart, color: Colors.white),
+                label: Text(
+                  product.stockQuantity <= 0 ? 'نفدت الكمية' : 'إضافة إلى السلة',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                onPressed: product.stockQuantity <= 0
+                    ? null // تعطيل الزر تماماً إذا كان المخزون 0
+                    : () {
                   Get.snackbar(
                     'نجاح',
-                    'تمت إضافة المنتج إلى السلة بنجاح',
+                    'تمت إضافة (${product.name}) إلى السلة بنجاح',
                     backgroundColor: Colors.green,
                     colorText: Colors.white,
                     snackPosition: SnackPosition.TOP,
@@ -81,3 +139,91 @@ class ProductInfoScreen extends GetView<DashboardController> {
     );
   }
 }
+
+
+
+
+//
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
+// import '../../dashboard/controller/dashboard_controller.dart';
+//
+// class ProductInfoScreen extends GetView<DashboardController> {
+//   const ProductInfoScreen({Key? key}) : super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('تفاصيل المنتج'),
+//         centerTitle: true,
+//         leading: IconButton(
+//           icon: const Icon(Icons.arrow_back_ios_new),
+//           onPressed: () => controller.goBackInCategories(), // الرجوع لصفحة المنتجات السابقة
+//         ),
+//       ),
+//       body: Padding(
+//         padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 90.0),
+//         child: SingleChildScrollView(
+//           child: Column(
+//             crossAxisAlignment: CrossAxisAlignment.stretch,
+//             children: [
+//               // حاوية محاكاة لصورة المنتج
+//               Container(
+//                 height: 250,
+//                 decoration: BoxDecoration(
+//                   color: Colors.grey[100],
+//                   borderRadius: BorderRadius.circular(20),
+//                 ),
+//                 child: const Icon(Icons.insert_photo_outlined, size: 100, color: Colors.grey),
+//               ),
+//               const SizedBox(height: 20),
+//
+//               // اسم المنتج وسعره مستدعى برمجياً
+//               Obx(() => Text(
+//                 controller.selectedProductName.value,
+//                 style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+//               )),
+//               const SizedBox(height: 10),
+//               Obx(() => Text(
+//                 controller.selectedProductPrice.value,
+//                 style: const TextStyle(fontSize: 18, color: Colors.blue, fontWeight: FontWeight.bold),
+//               )),
+//
+//               const SizedBox(height: 20),
+//               const Text(
+//                 'وصف المنتج:',
+//                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+//               ),
+//               const SizedBox(height: 8),
+//               const Text(
+//                 'هذا النص هو مثال لوصف المنتج المستهدف. المنتج يتميز بجودة عالية وصناعة محلية ممتازة تناسب تطلعاتك وضمان الشراء الآمن.',
+//                 style: TextStyle(fontSize: 14, color: Colors.grey, height: 1.5),
+//               ),
+//               const SizedBox(height: 30),
+//
+//               // زر إضافة إلى السلة
+//               ElevatedButton.icon(
+//                 style: ElevatedButton.styleFrom(
+//                   padding: const EdgeInsets.symmetric(vertical: 15),
+//                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+//                 ),
+//                 icon: const Icon(Icons.add_shopping_cart),
+//                 label: const Text('إضافة إلى السلة', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+//                 onPressed: () {
+//                   Get.snackbar(
+//                     'نجاح',
+//                     'تمت إضافة المنتج إلى السلة بنجاح',
+//                     backgroundColor: Colors.green,
+//                     colorText: Colors.white,
+//                     snackPosition: SnackPosition.TOP,
+//                   );
+//                 },
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }

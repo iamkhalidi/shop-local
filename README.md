@@ -7,7 +7,6 @@ https://iamkhalidi.github.io/
 https://shop-local-4d81d.firebaseapp.com/
 
 
-    
     *app icon
     *app name
     *remove default splash screen
@@ -21,11 +20,14 @@ https://shop-local-4d81d.firebaseapp.com/
     *users collection in firebase
     *use Loading in login button
     *when upload the tab put default link without /login .. for ex
+    remove default splash screen from web
+    search feature in categories screen
+    search feature in products screen
+    Privacy Policy - The Rights is saved with [name] 2026 (C) + returning terms
     
-    
-    
+
     **ui
-    *'home'
+    *'home'.
     *'cart'
     *'categories'
     *'products screen'
@@ -33,14 +35,32 @@ https://shop-local-4d81d.firebaseapp.com/
     
     logic
     'home'
-    'cart'
-    'categories'
-    'products screen'
-    'product info screen'
-    localization ar en
-    
-    pdf order information file 
+    'cart' with icon(quantiti of items in cart) + shakaing when new item added
+    *'categories'
+    *'products screen'
+    *'product info screen'
 
+    
+
+    
+     *    *    *    *    *    *    *
+
+
+    user set location 
+    deielvery fee
+    save order in firebase 'order' collection - order details [id, userInfo]
+    pdf order information file 
+    send order details to email
+    admen panel
+    localization ar en
+    ai
+
+
+    
+     *    *    *    *    *    *    *
+
+
+    responsive ui
 
 
 
