@@ -6,10 +6,23 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'routes/app_pages.dart';
 import 'features/auth/binding/auth_binding.dart'; // <--- أضفنا هذا الإستيراد للـ Binding الجديد
+import 'package:web/web.dart' as web;
+import 'package:flutter_web_plugins/url_strategy.dart';
 
 void main() async {
   // للتأكد من تهيئة الـ Flutter Widgets قبل تشغيل أي شيء آخر
   WidgetsFlutterBinding.ensureInitialized();
+
+  // 3. هذا الجزء يقوم بتصفير المسار وإجبار المتصفح على فتح صفحة الـ Splash عند عمل الـ Hot Restart
+  if (kIsWeb) {
+    usePathUrlStrategy(); // للتخلص من علامة /#/ المزعجة وجعل الروابط احترافية (مثل localhost:49537/)
+
+    // 🌟 الحل الحاسم: تغيير مسار شريط عنوان المتصفح برمجياً إلى المسار الرئيسي '/'
+    // هذا السطر يضمن أنه عند عمل Hot Restart، سيتغير الرابط في الأعلى فوراً ويصبح http://localhost:49537/
+    web.window.history.replaceState(null, 'Home', '/');
+
+    WidgetsBinding.instance.platformDispatcher.defaultRouteName; // تصفير الـ Route الأساسي في المحرك
+  }
 
   if (kIsWeb) {
     await Firebase.initializeApp(

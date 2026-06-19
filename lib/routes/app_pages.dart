@@ -7,10 +7,11 @@ import 'package:shop_local/features/auth/view/login_screen.dart';
 import 'package:shop_local/features/auth/view/register_screen.dart';
 import 'package:shop_local/features/auth/view/forgot_password_screen.dart';
 
-import '../features/dashboard/binding/dashboard_binding.dart';
-import '../features/dashboard/view/dashboard_screen.dart';
-import '../features/profile/binding/profile_binding.dart';
-import '../features/profile/view/profile_screen.dart';
+import 'package:shop_local/features/auth/binding/auth_binding.dart'; // 🌟 تم تعديل المسار هنا
+import 'package:shop_local/features/dashboard/binding/dashboard_binding.dart'; // 🌟 تم تعديل المسار هنا
+import 'package:shop_local/features/dashboard/view/dashboard_screen.dart'; // 🌟 تم تعديل المسار هنا
+import 'package:shop_local/features/profile/binding/profile_binding.dart'; // 🌟 تم تعديل المسار هنا
+import 'package:shop_local/features/profile/view/profile_screen.dart'; // 🌟 تم تعديل المسار هنا
 
 part 'app_routes.dart';
 
@@ -28,14 +29,18 @@ class AppPages {
     GetPage(
       name: _Paths.LOGIN,
       page: () => const LoginScreen(),
+        binding: AuthBinding()
     ),
     GetPage(
       name: _Paths.REGISTER,
       page: () => const RegisterScreen(),
+        binding: AuthBinding()
     ),
     GetPage(
       name: _Paths.FORGOT_PASSWORD,
       page: () => const ForgotPasswordScreen(),
+      binding: AuthBinding()
+
     ),
     GetPage(
       name: _Paths.HOME,

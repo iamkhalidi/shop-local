@@ -68,22 +68,35 @@ class LoginScreen extends GetView<AuthController> {
                 const SizedBox(height: 20),
 
                 // زر الدخول مع مراقبة حالة التحميل
-                Obx(() => controller.isLoading.value
-                    ? const Center(child: CircularProgressIndicator())
-                    : ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                  onPressed: () {
-                    if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
-                      controller.login(emailController.text.trim(), passwordController.text.trim());
-                    } else {
-                      Get.snackbar('تنبيه', 'الرجاء تعبئة جميع الحقول', backgroundColor: Colors.orange, colorText: Colors.white);
-                    }
-                  },
-                  child: const Text('تسجيل الدخول', style: TextStyle(fontSize: 16)),
-                )),
+                // 🌟 الزر المطور والمصحح لمراقبة حالة التحميل بالكامل
+                Obx(() {
+                  return controller.isLoading.value
+                      ? const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                      : ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                    onPressed: () {
+                      if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+                        controller.login(emailController.text.trim(), passwordController.text.trim());
+                      } else {
+                        Get.snackbar(
+                          'تنبيه',
+                          'الرجاء تعبئة جميع الحقول',
+                          backgroundColor: Colors.orange,
+                          colorText: Colors.white,
+                        );
+                      }
+                    },
+                    child: const Text('تسجيل الدخول', style: TextStyle(fontSize: 16)),
+                  );
+                }),
                 const SizedBox(height: 20),
 
                 // الانتقال لإنشاء حساب
@@ -105,3 +118,23 @@ class LoginScreen extends GetView<AuthController> {
     );
   }
 }
+
+
+//
+// Obx(() => controller.isLoading.value
+// ? const Center(child: CircularProgressIndicator())
+//     : ElevatedButton(
+// style: ElevatedButton.styleFrom(
+// padding: const EdgeInsets.symmetric(vertical: 15),
+// shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+// ),
+// onPressed: () {
+// if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+// controller.login(emailController.text.trim(), passwordController.text.trim());
+// } else {
+// Get.snackbar('تنبيه', 'الرجاء تعبئة جميع الحقول', backgroundColor: Colors.orange, colorText: Colors.white);
+// }
+// },
+// child: const Text('تسجيل الدخول', style: TextStyle(fontSize: 16)),
+// )),
+// ///

@@ -31,6 +31,9 @@ class AuthController extends GetxController {
     try {
       isLoading.value = true;
       await _auth.signInWithEmailAndPassword(email: email, password: password);
+
+      // 🌟 السر هنا: ننتظر ثانية واحدة فقط والتحميل شغال لكي يراه المستخدم ويكون الانتقال مريحاً للعين
+      await Future.delayed(const Duration(seconds: 1));
       checkUserStatus(); // التوجيه الصحيح بعد نجاح تسجيل الدخول
     } on FirebaseAuthException catch (e) {
       _showErrorSnackBar(_getArabicErrorMessage(e.code));
