@@ -13,41 +13,53 @@ https://shop-local-4d81d.firebaseapp.com/
     *splash screen
     *sign up/login
     *routes with binding in getx
-    *profile
+    *home ui
+    *categories ui
+    *products ui
+    *product info ui
+    *profile ui
     *bottom nav bar
     *user information "name-number-
+    *home logic
+    *categories logic
+    *products logic
+    *product info logic
     *the number & email without repeating
     *users collection in firebase
     *use Loading in login
     *when upload the tab put default link without /login .. for ex
     //remove default splash screen from web
     *update home screen ui to make every category in row
+
+
+> Not Completed Yet
+
+
     favorites list [collection in user collection]
-    1GB Memory usage in Chrome
     cart logic
+    cart ui
+    'cart' with icon(quantiti of items in cart) + shakaing when new item added
+
+
+
+     *    *    *    *    *    *    *
+
+
     search feature in categories screen
     search feature in products screen
+    save order in firebase 'order' collection - order details [id, userInfo]
+    1GB Memory usage in Chrome
     Privacy Policy - The Rights is saved with [name] 2026 (C) + returning terms
-    
 
-    **ui
-    *'home'.
-    *'cart'
-    *'categories'
-    *'products screen'
-    *'product info screen'
-    
-    logic
-    *'home'
-    'cart' with icon(quantiti of items in cart) + shakaing when new item added
-    *'categories'
-    *'products screen'
-    *'product info screen'
+
+
+
 
     
 
     
      *    *    *    *    *    *    *
+>> Later
 
 
     user set location 
