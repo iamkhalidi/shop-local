@@ -18,11 +18,12 @@ https://shop-local-4d81d.firebaseapp.com/
     *user information "name-number-
     *the number & email without repeating
     *users collection in firebase
-use Loading in login 
-
+    *use Loading in login
     *when upload the tab put default link without /login .. for ex
     //remove default splash screen from web
-    update home screen ui to make every category in row
+    *update home screen ui to make every category in row
+    favorites list [collection in user collection]
+    1GB Memory usage in Chrome
     cart logic
     search feature in categories screen
     search feature in products screen
@@ -52,11 +53,13 @@ use Loading in login
     user set location 
     deielvery fee
     save order in firebase 'order' collection - order details [id, userInfo]
+    internet checker
     pdf order information file 
-    send order details to email
-    admen panel
+    admen 
     localization ar en
+    send order details to email
     ai
+
 
 
     
