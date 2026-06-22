@@ -1,0 +1,513 @@
+ - ما هو الـ Renderer المستخدم أثناء الـ Build؟
+من الممكن بسبب هذا السطر الذي وضعته انا في index.html  <script>
+  window.flutterWebRenderer = "html";
+  </script> , لانني اذا لم اقم بوضعه لاتظهر الايقونات في التطبيق .
+
+
+
+- متى يرتفع الرقم إلى 1.5GB تحديداً؟
+كلما اعمل hot restart اعتقد ان الرقم يزيد اولا كان تقريبا 488mb ويزيد الى ان يصبح 1.5gb
+
+
+- ما هي آلية تدمير الـ Controllers؟
+انا استخدم binding سوف اريك الان:
+وبخصوص ال binding تقريبا كل ملفاتي يوجد لديها واحد,
+auth_binding + favorites_binding + home_binding .... كل الصفحات تملكه
+app_routes:part of 'app_pages.dart';
+
+
+           abstract class Routes {
+             Routes._();
+             static const SPLASH = _Paths.SPLASH;
+             static const LOGIN = _Paths.LOGIN;
+             static const REGISTER = _Paths.REGISTER;
+             static const FORGOT_PASSWORD = _Paths.FORGOT_PASSWORD;
+             static const HOME = _Paths.HOME;
+             static const PROFILE = _Paths.PROFILE;
+             static const DASHBOARD = _Paths.DASHBOARD;
+             static const FAVORITES = _Paths.FAVORITES;
+             static const PRODUCT_INFO = _Paths.PRODUCT_INFO;
+           }
+
+           abstract class _Paths {
+             _Paths._();
+             static const SPLASH = '/splash';
+             static const LOGIN = '/login';
+             static const REGISTER = '/register';
+             static const FORGOT_PASSWORD = '/forgot-password';
+             static const HOME = '/home';
+             static const PROFILE = '/profile';
+             static const DASHBOARD = '/dashboard';
+             static const FAVORITES = '/favorites';
+             static const PRODUCT_INFO = '/product-info';
+           },
+app_pages: import 'package:get/get.dart';
+           import 'package:shop_local/features/home/binding/home_binding.dart';
+           import 'package:shop_local/features/home/view/home_screen.dart';
+           import 'package:shop_local/features/splash/binding/splash_binding.dart';
+           import 'package:shop_local/features/splash/view/splash_screen.dart';
+           import 'package:shop_local/features/auth/view/login_screen.dart';
+           import 'package:shop_local/features/auth/view/register_screen.dart';
+           import 'package:shop_local/features/auth/view/forgot_password_screen.dart';
+
+           import 'package:shop_local/features/auth/binding/auth_binding.dart'; // 🌟 تم تعديل المسار هنا
+           import 'package:shop_local/features/dashboard/binding/dashboard_binding.dart'; // 🌟 تم تعديل المسار هنا
+           import 'package:shop_local/features/dashboard/view/dashboard_screen.dart'; // 🌟 تم تعديل المسار هنا
+           import 'package:shop_local/features/profile/binding/profile_binding.dart'; // 🌟 تم تعديل المسار هنا
+           import 'package:shop_local/features/profile/view/profile_screen.dart';
+
+           import '../features/categories/view/product_info_screen.dart';
+           import '../features/favorites/binding/favorites_binding.dart';
+           import '../features/favorites/view/favorites_screen.dart'; // 🌟 تم تعديل المسار هنا
+
+           part 'app_routes.dart';
+
+           class AppPages {
+             AppPages._();
+
+             static const INITIAL = Routes.SPLASH;
+
+             static final routes = [
+               GetPage(
+                 name: _Paths.SPLASH,
+                 page: () => const SplashScreen(),
+                 binding: SplashBinding(),
+               ),
+               GetPage(
+                 name: _Paths.LOGIN,
+                 page: () => const LoginScreen(),
+                   binding: AuthBinding()
+               ),
+               GetPage(
+                 name: _Paths.REGISTER,
+                 page: () => const RegisterScreen(),
+                   binding: AuthBinding()
+               ),
+               GetPage(
+                 name: _Paths.FORGOT_PASSWORD,
+                 page: () => const ForgotPasswordScreen(),
+                 binding: AuthBinding()
+
+               ),
+               GetPage(
+                 name: _Paths.HOME,
+                 page: () => const HomeScreen(),
+                 binding: HomeBinding(),
+               ),
+               GetPage(
+                 name: _Paths.PROFILE,
+                 page: () => const ProfileScreen(),
+                 binding: ProfileBinding(),
+               ),
+               GetPage(
+                 name: _Paths.DASHBOARD,
+                 page: () => const DashboardScreen(),
+                 binding: DashboardBinding(),
+               ),
+               GetPage(
+                 name: _Paths.FAVORITES,
+                 page: () => const FavoritesScreen(),
+                 binding: FavoritesBinding(),
+               ),
+               GetPage(
+                 name: _Paths.PRODUCT_INFO,
+                 page: () => const ProductInfoScreen(),
+                 // نمرر نفس باينديق الكاتيجوري لتظل الكنترولرز متصلة
+                 binding: DashboardBinding(),
+               ),
+             ];
+           },
+
+dashboard_screen:
+
+import 'dart:ui';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../cart/controller/cart_controller.dart';
+import '../../cart/widgets/cart_badge_widget.dart';
+import '../../home/view/home_screen.dart';
+import '../../categories/view/categories_screen.dart';
+import '../../cart/view/cart_screen.dart';
+import '../controller/dashboard_controller.dart';
+
+class DashboardScreen extends GetView<DashboardController> {
+  const DashboardScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+
+    // 🚀 التعديل الجوهري: حقن كنترولر السلة هنا ليصبح جاهزاً للشارة فور إقلاع التطبيق
+    final cartController = Get.put(CartController());
+    final List<Widget> pages = [
+      const HomeScreen(),
+      const CategoriesScreen(),
+      const CartScreen(),
+    ];
+
+    return Scaffold(
+      // الـ extendBody يسمح للمحتوى بالنزول خلف الشريط السفلي الزجاجي ليعطي تأثير الشفافية العميق
+      extendBody: true,
+      body: Obx(() => IndexedStack(
+        index: controller.currentIndex.value,
+        children: pages,
+      )),
+
+      // 🛠️ التعديل الأول: إضافة الـ SafeArea هنا لحماية الأزرار من التداخل مع نظام الجوال
+      bottomNavigationBar: SafeArea(
+        bottom: true,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10), // تم تقليل الـ bottom لتتكفل الـ SafeArea بالباقي
+          child: Container(
+            height: 65, // تم ضبط الارتفاع ليتناسق مع التصميم الجديد
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04), // ظل ناعم جداً يناسب الزجاج
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                )
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: BackdropFilter(
+                // 🛠️ التعديل الثاني: زيادة الـ blur ليعطي تأثير الـ Liquid Glass الحقيقي
+                filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                child: Container(
+                  color: Colors.white.withOpacity(0.35), // 🌟 تقليل النسبة لـ 0.35 لتمرير الألوان الخلفية بوضوح
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildNavItem(Icons.home_outlined, Icons.home, 'الرئيسية', 0),
+                      _buildNavItem(Icons.grid_view_outlined, Icons.grid_view_rounded, 'الفئات', 1),
+                      _buildNavItem(Icons.shopping_bag_outlined, Icons.shopping_bag, 'السلة', 2),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+
+
+
+  Widget _buildNavItem(IconData unselectedIcon, IconData selectedIcon, String label, int index) {
+    return Obx(() {
+      final isSelected = controller.currentIndex.value == index;
+      return GestureDetector(
+        onTap: () => controller.changePage(index),
+        behavior: HitTestBehavior.opaque,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeInOut,
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.blue.withOpacity(0.1) : Colors.transparent,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // 🛠️ تبديل الأيقونة التقليدية بالشارة الآمنة عند التوجيه لتبويب السلة
+              index == 2
+                  ? CartBadgeWidget(
+                icon: isSelected ? selectedIcon : unselectedIcon,
+                iconColor: isSelected ? Colors.blue.shade500 : Colors.grey.shade400,
+                iconSize: 24,
+              )
+                  : Icon(
+                isSelected ? selectedIcon : unselectedIcon,
+                color: isSelected ? Colors.blue.shade500 : Colors.grey.shade400,
+                size: 24,
+              ),
+              const SizedBox(height: 2),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  color: isSelected ? Colors.blue.shade700 : Colors.grey.shade600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+  },
+dashboard_controller :import 'package:get/get.dart';
+
+                      import '../../categories/controller/products_controller.dart';
+
+                      class DashboardController extends GetxController {
+                        var currentIndex = 0.obs;
+
+                        // 0: قائمة الفئات، 1: المنتجات، 2: تفاصيل المنتج
+                        var currentCategoryPage = 0.obs;
+
+                        var selectedCategoryName = ''.obs;
+                        var selectedProductName = ''.obs;
+                        var selectedProductPrice = ''.obs;
+
+                        // القيمة المراقبة لتحديد مصدر الدخول
+                        var isComingFromHome = false.obs;
+
+                        void changePage(int index) {
+                          currentIndex.value = index;
+                          if (index == 1) {
+                            // عند الضغط على تبويب الفئات من الشريط السفلي، يبدأ دائماً من شاشة الفئات العامة (0)
+                            currentCategoryPage.value = 0;
+                          }
+                        }
+
+                        // للانتقال إلى صفحة المنتجات داخل قسم الفئات
+                        void goToProducts(String categoryName) {
+                          selectedCategoryName.value = categoryName;
+                          currentCategoryPage.value = 1;
+
+                          // 🚀 جلب المنتجات هنا لمرة واحدة فقط عند الضغط على الفئة
+                          Get.find<ProductsController>().fetchProducts(categoryName);
+                        }
+
+                        // للانتقال إلى صفحة تفاصيل المنتج داخل قسم الفئات
+                        void goToProductInfo(String productName, String price) {
+                          // 🛠️ تم إزالة سطر تصفير isComingFromHome من هنا ليتم التحكم به من الشاشات بحرية
+                          selectedProductName.value = productName;
+                          selectedProductPrice.value = price;
+                          currentCategoryPage.value = 2;
+                        }
+
+                        // للرجوع للخلف داخل قسم الفئات
+                        void goBackInCategories() {
+                          if (currentCategoryPage.value > 0) {
+                            currentCategoryPage.value--;
+                          }
+                        }
+                      }
+ ,
+ dashboard_binding: import 'package:get/get.dart';
+                    import '../controller/dashboard_controller.dart';
+                    import '../../home/controller/home_controller.dart';
+                    // 👇 استيراد الكنترولر الجديد للمنتجات
+                    import '../../categories/controller/products_controller.dart';
+
+                    class DashboardBinding extends Bindings {
+                      @override
+                      void dependencies() {
+                        // حقن كنترولر اللوحة الرئيسية
+                        Get.lazyPut<DashboardController>(() => DashboardController());
+
+                        // حقن كنترولر الشاشة الرئيسية ليكون جاهزاً فور فتح الـ Dashboard
+                        Get.lazyPut<HomeController>(() => HomeController());
+
+                        // 🌟 السطر السحري الجديد: حقن الـ ProductsController ليكون جاهزاً بشكل كسلان في الذاكرة
+                        Get.lazyPut<ProductsController>(() => ProductsController());
+                      }
+                    }
+,
+auth_controller: import 'package:firebase_auth/firebase_auth.dart';
+                 import 'package:flutter/material.dart';
+                 import 'package:get/get.dart';
+                 import 'package:shop_local/routes/app_pages.dart';
+                 import 'package:cloud_firestore/cloud_firestore.dart';
+
+                 class AuthController extends GetxController {
+                   final FirebaseAuth _auth = FirebaseAuth.instance;
+                   Rxn<User> firebaseUser = Rxn<User>();
+                   var isLoading = false.obs;
+
+                   // 🌟 السطور  الجديدة: نقل حقول النص إلى الكنترولر للحفاظ على ثباتها أثناء الـ Rebuild
+                   final emailController = TextEditingController();
+                   final passwordController = TextEditingController();
+
+
+
+                   @override
+                   void onInit() {
+                     super.onInit();
+                     // نربط الحساب بالخلفية فقط بدون دالة ever التلقائية المستعجلة
+                     firebaseUser.bindStream(_auth.userChanges());
+                   }
+
+                   // هذه الدالة الذكية التي سيستدعيها الـ SplashController بعد انتهاء الـ 3 ثوانٍ للأنيميشن
+                   void checkUserStatus() {
+                     if (_auth.currentUser == null) {
+                       Get.offAllNamed(Routes.LOGIN);
+                     } else {
+                       Get.offAllNamed(Routes.DASHBOARD);
+                       // Get.offAllNamed(Routes.HOME);
+                     }
+                   }
+
+
+                   // --- 1. تسجيل الدخول ---
+                   void login() async { // قمنا بإزالة الباراميترز لأنها أصبحت متوفرة محلياً في الكنترولر
+                     try {
+                       final email = emailController.text.trim();
+                       final password = passwordController.text.trim();
+
+                       if (email.isEmpty || password.isEmpty) {
+                         Get.snackbar(
+                           'تنبيه',
+                           'الرجاء تعبئة جميع الحقول',
+                           backgroundColor: Colors.orange,
+                           colorText: Colors.white,
+                         );
+                         return;
+                       }
+
+                       isLoading.value = true;
+                       await _auth.signInWithEmailAndPassword(email: email, password: password);
+
+                       await Future.delayed(const Duration(seconds: 1));
+
+                       // 🌟 خطوة ذكية: تنظيف الحقول بعد نجاح تسجيل الدخول لكي لا تظل مكتوبة إذا سجل خروج مستقبلاً
+                       emailController.clear();
+                       passwordController.clear();
+
+                       checkUserStatus();
+                     } on FirebaseAuthException catch (e) {
+                       _showErrorSnackBar(_getArabicErrorMessage(e.code));
+                     } finally {
+                       isLoading.value = false;
+                     }
+                   }
+
+
+
+                   // --- 2. إنشاء حساب جديد ---
+                 // --- 2. إنشاء حساب جديد مع فحص تكرار رقم الجوال ---
+                   void register({
+                     required String name,
+                     required String phone,
+                     required String email,
+                     required String password,
+                   }) async {
+                     try {
+                       isLoading.value = true;
+
+                       // 👇 1. الفحص الذكي: نتحقق أولاً في قاعدة البيانات Firestore هل الرقم موجود؟
+                       final snapshot = await FirebaseFirestore.instance
+                           .collection('users')
+                           .where('phone', isEqualTo: phone)
+                           .get();
+
+                       // إذا وجدنا أي مستخدم مسجل بنفس هذا الرقم، نوقف التسجيل فوراً
+                       if (snapshot.docs.isNotEmpty) {
+                         _showErrorSnackBar("رقم الجوال هذا مستخدم بالفعل من قبل مستخدم آخر!");
+                         isLoading.value = false; // نطفئ مؤشر التحميل
+                         return; // 🛑 أمر الخروج: يمنع الكود بالأسفل من العمل ويوقف الدالة هنا
+                       }
+
+                       // --------------------------------------------------------------------
+                       // إذا لم يجد الرقم مكرراً، سيتخطى الشرط الأعلى ويكمل باقي الكود طبيعي:
+                       // --------------------------------------------------------------------
+
+                       // 2. إنشاء الحساب بالبريد وكلمة السر في Firebase Auth
+                       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+                         email: email,
+                         password: password,
+                       );
+
+                       // 3. تحديث الاسم والرقم مدمجين داخل الـ DisplayName
+                       if (userCredential.user != null) {
+                         await userCredential.user!.updateDisplayName("$name|$phone");
+
+                         // 4. خطوة احترافية: حفظ بيانات المستخدم في Firestore لكي ينجح الفحص في المرات القادمة
+                         await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
+                           'uid': userCredential.user!.uid,
+                           'name': name,
+                           'phone': phone,
+                           'email': email,
+                           'createdAt': DateTime.now(),
+                         });
+                       }
+
+                       Get.snackbar('تم بنجاح', 'تم إنشاء الحساب بنجاح، مرحباً بك يا $name',
+                           backgroundColor: Colors.green, colorText: Colors.white);
+
+                       checkUserStatus();
+                     } on FirebaseAuthException catch (e) {
+                       print("Firebase Register Error Code: ${e.code}");
+                       _showErrorSnackBar(_getArabicErrorMessage(e.code));
+                     } finally {
+                       isLoading.value = false;
+                     }
+                   }
+
+                   // --- 3. نسيان كلمة السر ---
+                   void resetPassword(String email) async {
+                     try {
+                       isLoading.value = true;
+                       await _auth.sendPasswordResetEmail(email: email);
+                       Get.snackbar(
+                         'رابط الاستعادة',
+                         'تم إرسال رابط إعادة تعيين كلمة السر إلى بريدك الإلكتروني',
+                         backgroundColor: Colors.blue,
+                         colorText: Colors.white,
+                         duration: const Duration(seconds: 5),
+                       );
+                     } on FirebaseAuthException catch (e) {
+                       _showErrorSnackBar(_getArabicErrorMessage(e.code));
+                     } finally {
+                       isLoading.value = false;
+                     }
+                   }
+
+                   // --- 4. تسجيل الخروج ---
+                   void signOut() async {
+                     await _auth.signOut();
+                     Get.offAllNamed(Routes.LOGIN); // نرجعه لصفحة تسجيل الدخول فوراً عند الخروج
+                   }
+
+                   String _getArabicErrorMessage(String errorCode) {
+                     switch (errorCode) {
+                       case 'user-not-found': return 'لا يوجد مستخدم بهذا البريد الإلكتروني.';
+                       case 'wrong-password': return 'كلمة المرور غير صحيحة.';
+                       case 'email-already-in-use': return 'هذا البريد الإلكتروني مستخدم بالفعل.';
+                       case 'invalid-email': return 'صيغة البريد الإلكتروني غير صحيحة.';
+                       case 'weak-password': return 'كلمة المرور ضعيفة جداً.';
+                       default: return 'حدث خطأ غير متوقع، تأكد من المدخلات و حاول مرة أخرى.';
+                     }
+                   }
+
+                   void _showErrorSnackBar(String message) {
+                     Get.snackbar(
+                       'خطأ', message,
+                       backgroundColor: Colors.redAccent,
+                       colorText: Colors.white,
+                       snackPosition: SnackPosition.BOTTOM,
+                       margin: const EdgeInsets.all(15),
+                     );
+                   }
+                 }
+.
+- كيف يتم تشغيل وعرض الصور لديك؟
+حاليا انا في وضع تحربة التطبيق ف لاياتي من فاير بيس صور جميعها روابط لصور لاتعمل لهذا يظهر لدي فقط صورة ايقونة انظر الى الكود :
+cart_screen :   itemBuilder: (context, index) {
+                                final CartItemModel item = controller.cartItems[index];
+                                return Card(
+                                  margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                  child: ListTile(
+                                    leading: Image.network(
+                                      item.image,
+                                      width: 50,
+                                      height: 50,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) => const Icon(Icons.image),
+                                    ),
+                                    title: Text(item.productName),
+                                    subtitle: Text('\$${item.price.toStringAsFixed(2)} × ${item.quantity} = \$${(item.price * item.quantity).toStringAsFixed(2)}'),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.mi,
+
+
+
+

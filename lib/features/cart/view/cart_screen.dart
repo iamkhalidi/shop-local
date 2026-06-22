@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controller/cart_controller.dart';
 import '../model/cart_item_model.dart';
+import '../widgets/clear_cart_dialog.dart';
 
 
 class CartScreen extends StatelessWidget {
@@ -9,8 +10,10 @@ class CartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // جلب نسخة الكنترولر المحقونة
-    final controller = Get.put(CartController());
+    // // جلب نسخة الكنترولر المحقونة
+    // final controller = Get.find(CartController());
+    // 🚀 جلب النسخة المجهزة مسبقاً بدلاً من إعادة إنشائها
+    final controller = Get.find<CartController>();
 
     return Scaffold(
       appBar: AppBar(
@@ -19,7 +22,19 @@ class CartScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_sweep),
-            onPressed: () => controller.clearAll(),
+            onPressed: () {
+              showDialog(
+                context: context,
+                barrierDismissible: false, // يمنع إغلاق الديالوج عند الضغط خارجه
+                builder: (BuildContext context) {
+                  return ClearCartDialog(
+                    onConfirm: () {
+                      controller.clearAll(); // استدعاء دالة المسح من الكنترولر عند التأكيد
+                    },
+                  );
+                },
+              );
+            },
           ),
         ],
       ),
@@ -48,7 +63,7 @@ class CartScreen extends StatelessWidget {
                         errorBuilder: (context, error, stackTrace) => const Icon(Icons.image),
                       ),
                       title: Text(item.productName),
-                      subtitle: Text('\$${(item.price * item.quantity).toStringAsFixed(2)}'),
+                      subtitle: Text('\$${item.price.toStringAsFixed(2)} × ${item.quantity} = \$${(item.price * item.quantity).toStringAsFixed(2)}'),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [

@@ -69,8 +69,7 @@ class AppPages {
     GetPage(
       name: _Paths.PRODUCT_INFO,
       page: () => const ProductInfoScreen(),
-      // نمرر نفس باينديق الكاتيجوري لتظل الكنترولرز متصلة
-      binding: DashboardBinding(),
+      // binding: DashboardBinding(),
     ),
   ];
 }

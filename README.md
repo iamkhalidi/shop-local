@@ -30,27 +30,31 @@ https://shop-local-4d81d.firebaseapp.com/
     *when upload the tab put default link without /login .. for ex
     //remove default splash screen from web
     *update home screen ui to make every category in row
+    *favorites list [collection in user collection] + put it in profile screen
+    *cart logic
+    *cart ui
+    *cart item price * quantity 
+    *'cart' with icon(quantiti of items in cart) + shakaing when new item added
+
+
 
 
 > Not Completed Yet
 
 
-    favorites list [collection in user collection] + put it in profile screen
-    cart logic
-    cart ui
-    'cart' with icon(quantiti of items in cart) + shakaing when new item added
+    1GB Memory usage in Chrome ( cause: when u press hot restart the app save the old build then run the new one that causes high memrory usage)
+    *internet checker
+    save order in firebase 'order' collection - order details [userInfo]
+    Make orders screen(in profile screen)
 
-
+    long loading on home screen categories 
 
      *    *    *    *    *    *    *
 
 
     search feature in categories screen
     search feature in products screen
-    save order in firebase 'order' collection - order details [id, userInfo]
-    1GB Memory usage in Chrome
     Privacy Policy - The Rights is saved with [name] 2026 (C) + returning terms
-    Make orders screen(in profile screen)
 
 
 
@@ -67,8 +71,6 @@ https://shop-local-4d81d.firebaseapp.com/
 
     user set location 
     deielvery fee
-    save order in firebase 'order' collection - order details [id, userInfo]
-    internet checker
     pdf order information file 
     admen panel
     reset password screen write "email msg in unwanted msgs"

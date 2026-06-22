@@ -1,6 +1,15 @@
+
+
+
+
+
+
+
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../cart/controller/cart_controller.dart';
+import '../../cart/widgets/cart_badge_widget.dart';
 import '../../home/view/home_screen.dart';
 import '../../categories/view/categories_screen.dart';
 import '../../cart/view/cart_screen.dart';
@@ -11,7 +20,9 @@ class DashboardScreen extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    // مصفوفة الشاشات الثلاثة المطلوبة
+
+    // 🚀 التعديل الجوهري: حقن كنترولر السلة هنا ليصبح جاهزاً للشارة فور إقلاع التطبيق
+    final cartController = Get.put(CartController());
     final List<Widget> pages = [
       const HomeScreen(),
       const CategoriesScreen(),
@@ -68,7 +79,9 @@ class DashboardScreen extends GetView<DashboardController> {
     );
   }
 
-  // ويدجت لبناء أزرار شريط التنقل المحدثة بالمقاسات الجديدة
+
+
+
   Widget _buildNavItem(IconData unselectedIcon, IconData selectedIcon, String label, int index) {
     return Obx(() {
       final isSelected = controller.currentIndex.value == index;
@@ -78,25 +91,32 @@ class DashboardScreen extends GetView<DashboardController> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 250),
           curve: Curves.easeInOut,
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12), // 📐 تقليص الـ padding الداخلي للتناسب مع الارتفاع الجديد
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
           decoration: BoxDecoration(
             color: isSelected ? Colors.blue.withOpacity(0.1) : Colors.transparent,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center, // توسيط المحتوى عمودياً
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              // 🛠️ تبديل الأيقونة التقليدية بالشارة الآمنة عند التوجيه لتبويب السلة
+              index == 2
+                  ? CartBadgeWidget(
+                icon: isSelected ? selectedIcon : unselectedIcon,
+                iconColor: isSelected ? Colors.blue.shade500 : Colors.grey.shade400,
+                iconSize: 24,
+              )
+                  : Icon(
                 isSelected ? selectedIcon : unselectedIcon,
                 color: isSelected ? Colors.blue.shade500 : Colors.grey.shade400,
-                size: 24, // تم ضبط الحجم لـ 24
+                size: 24,
               ),
               const SizedBox(height: 2),
               Text(
                 label,
                 style: TextStyle(
-                  fontSize: 11, // حجم خط مناسب يمنع التداخل أو النزول لأسفل
+                  fontSize: 11,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                   color: isSelected ? Colors.blue.shade700 : Colors.grey.shade600,
                 ),
