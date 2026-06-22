@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../routes/app_pages.dart';
+import '../../cart/controller/cart_controller.dart';
 import '../../dashboard/controller/dashboard_controller.dart';
 import '../../categories/controller/products_controller.dart';
 import '../controller/home_controller.dart';
@@ -136,21 +137,15 @@ class HomeScreen extends GetView<HomeController> {
 
                       return GestureDetector(
                         onTap: () {
-                          // 1. حفظ المنتج المختار بدقة في الكنترولر
-                          productsController.selectedProduct.value = product;
 
-                          // 2. تحديد أننا جئنا من الهوم للرجوع بشكل صحيح
+                          // 1. تحديد المنتج المختار فوراً في الكنترولر المخصص له
+                          Get.find<ProductsController>().selectedProduct.value = product;
+
+                          // 2. إخبار شاشة التفاصيل أننا جئنا من الهوم (لأجل زر الرجوع)
                           dashboardController.isComingFromHome.value = true;
 
-                          // 3. الانتقال النظيف والمباشر لشاشة التفاصيل المستقلة 🚀
+                          // 3. 🚀 الانتقال الاحترافي المباشر كشاشة كاملة دون تداخل التبويبات
                           Get.toNamed(Routes.PRODUCT_INFO);
-                          // productsController.selectedProduct.value = product;
-                          // dashboardController.selectedProductName.value = product.name;
-                          // dashboardController.selectedProductPrice.value = "${product.currentPrice} ريال";
-                          // dashboardController.isComingFromHome.value = true;
-                          //
-                          // dashboardController.currentIndex.value = 1;
-                          // dashboardController.currentCategoryPage.value = 2;
                         },
                         child: Container(
                           width: 160,
@@ -238,24 +233,36 @@ class HomeScreen extends GetView<HomeController> {
                                     ),
                                     const SizedBox(height: 8),
 
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          '${product.currentPrice} ريال',
-                                          style: const TextStyle(
-                                              color: Colors.blue,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 13
-                                          ),
-                                        ),
-                                        Icon(
-                                            Icons.add_circle,
-                                            color: Colors.blue.withOpacity(0.8),
-                                            size: 22
-                                        ),
-                                      ],
-                                    ),
+                        // داخل home_screen.dart ابحث عن الـ Row الخاص بالسعر والزر واستبدله بالآتي:
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '${product.currentPrice} ريال',
+                              style: const TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13
+                              ),
+                            ),
+                            // 🛠️ التعديل السحري هنا: فصل حدث الضغط لمنع التداخل مع كارت المنتج
+                            GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () async {
+                                // استدعاء السلة مباشرة دون التأثير على تفاصيل المنتج المختار
+                                await Get.find<CartController>().addProductToCart(product);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0), // لتوسيع مساحة اللمس للزر
+                                child: Icon(
+                                    Icons.add_circle,
+                                    color: Colors.blue.withOpacity(0.8),
+                                    size: 22
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                                   ],
                                 ),
                               ),
@@ -296,3 +303,25 @@ class HomeScreen extends GetView<HomeController> {
     );
   }
 }
+
+
+
+//
+// Row(
+// mainAxisAlignment: MainAxisAlignment.spaceBetween,
+// children: [
+// Text(
+// '${product.currentPrice} ريال',
+// style: const TextStyle(
+// color: Colors.blue,
+// fontWeight: FontWeight.bold,
+// fontSize: 13
+// ),
+// ),
+// Icon(
+// Icons.add_circle,
+// color: Colors.blue.withOpacity(0.8),
+// size: 22
+// ),
+// ],
+// )

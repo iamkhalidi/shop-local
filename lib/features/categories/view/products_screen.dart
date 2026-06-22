@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../cart/controller/cart_controller.dart';
+import '../../cart/model/cart_item_model.dart';
 import '../../dashboard/controller/dashboard_controller.dart';
 import '../../favorites/widgets/favorite_button_widget.dart';
 import '../controller/products_controller.dart';
@@ -9,15 +11,8 @@ class ProductsScreen extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    // حقن الـ ProductsController الجديد هنا ليعمل في هذه الشاشة
-    // final ProductsController productsController = Get.put(ProductsController());
-
-    //  هذا السطر :
     final ProductsController productsController = Get.find<ProductsController>();
 
-    // استدعاء دالة جلب المنتجات فوراً بناءً على اسم الفئة المختارة من الـ DashboardController
-    // نستخدم الـ ID الفعلي للفئة هنا ليتم الجلب بشكل سليم
-    productsController.fetchProducts(controller.selectedCategoryName.value);
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -161,7 +156,7 @@ class ProductsScreen extends GetView<DashboardController> {
                             ),
                             const SizedBox(height: 5),
 
-                            // السعر الحالي بعد الخصم
+                            // داخل GridView.builder -> itemBuilder في ملف products_screen.dart:
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -169,8 +164,13 @@ class ProductsScreen extends GetView<DashboardController> {
                                     '${product.currentPrice} ريال',
                                     style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 14)
                                 ),
-                                // أيقونة إضافة سريعة بشكل جمالي منسق
-                                Icon(Icons.add_circle, color: Colors.blue.withOpacity(0.8), size: 24),
+                                GestureDetector(
+                                  onTap: () {
+                                    // استدعاء مباشر ونظيف بسطر واحد لتمرير كائن المنتج بالكامل
+                                    Get.find<CartController>().addProductToCart(product);
+                                  },
+                                  child: Icon(Icons.add_circle, color: Colors.blue.withOpacity(0.8), size: 24),
+                                ),
                               ],
                             ),
                           ],
@@ -212,17 +212,3 @@ class ProductsScreen extends GetView<DashboardController> {
     );
   }
 }
-
-
-
-
-// // أيقونة تمثل صورة المنتج مؤقتاً لحين ربط الروابط
-// Expanded(
-// child: Container(
-// decoration: BoxDecoration(
-// color: Colors.grey[50],
-// borderRadius: BorderRadius.circular(12),
-// ),
-// child: const Icon(Icons.shopping_bag_outlined, size: 50, color: Colors.blue),
-// ),
-// ),

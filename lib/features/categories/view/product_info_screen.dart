@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../routes/app_pages.dart';
+import '../../cart/controller/cart_controller.dart';
+import '../../cart/model/cart_item_model.dart';
 import '../../dashboard/controller/dashboard_controller.dart';
 import '../../favorites/widgets/favorite_button_widget.dart';
 import '../controller/products_controller.dart'; // استيراد الكنترولر الجديد للمنتجات
@@ -24,14 +27,17 @@ class ProductInfoScreen extends GetView<DashboardController> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new),
           onPressed: () {
-            // إغلاق شاشة التفاصيل الحالية والعودة للشاشة السابقة أياً كانت (هوم أو مفضلة)
-            Get.back();
-            // // إذا كان المؤشر الرئيسي للتبويب يقف على شاشة الرئيسية (0)، نعيده إلى الهوم مباشرة
-            // if (controller.isComingFromHome.value) {
-            //   controller.changePage(0); // العودة لتبويب الرئيسية
-            // } else {
-            //   controller.goBackInCategories(); // العودة الطبيعية لصفحة المنتجات داخل قسم الفئات
-            // }
+            // 1. تصغير وتصفير المتغير للحفاظ على نظافة المسارات
+            controller.isComingFromHome.value = false;
+
+            // 2. 🚀 الحل السحري: التحقق هل الشاشة مفتوحة كـ Page مستقلة فوق الـ Dashboard؟
+            if (Get.currentRoute == Routes.PRODUCT_INFO || ModalRoute.of(context)?.canPop == true) {
+              // إذا فُتحت عبر Get.toNamed من الهوم، يتم إغلاقها فوراً والعودة للخلف بشكل طبيعي
+              Get.back();
+            } else {
+              // إذا كانت معروضة داخل الـ IndexedStack في قسم الفئات، يرجع برمجياً للشاشة السابقة
+              controller.goBackInCategories();
+            }
           },
         ),
       ),
@@ -159,32 +165,26 @@ class ProductInfoScreen extends GetView<DashboardController> {
                 ],
               ),
               const SizedBox(height: 30),
-
-              // زر إضافة إلى السلة الديناميكي بحسب المخزن
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: product.stockQuantity <= 0 ? Colors.grey : Colors.blue,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-                icon: const Icon(Icons.add_shopping_cart, color: Colors.white),
-                label: Text(
-                  product.stockQuantity <= 0 ? 'نفدت الكمية' : 'إضافة إلى السلة',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                onPressed: product.stockQuantity <= 0
-                    ? null // تعطيل الزر تماماً إذا كان المخزون 0
-                    : () {
-                  Get.snackbar(
-                    'نجاح',
-                    'تمت إضافة (${product.name}) إلى السلة بنجاح',
-                    backgroundColor: Colors.green,
-                    colorText: Colors.white,
-                    snackPosition: SnackPosition.TOP,
-                  );
-                },
-              ),
+        //  الكود المحدث والمطور لزر إضافة السلة:
+        ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: product.stockQuantity <= 0 ? Colors.grey : Colors.blue,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          icon: const Icon(Icons.add_shopping_cart, color: Colors.white),
+          label: Text(
+            product.stockQuantity <= 0 ? 'نفدت الكمية' : 'إضافة إلى السلة',
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          onPressed:  product.stockQuantity <= 0
+              ? null
+              : () {
+            // استدعاء مباشر مريح للغاية
+            Get.find<CartController>().addProductToCart(product);
+          },
+        ),
             ],
           ),
         ),
@@ -192,4 +192,3 @@ class ProductInfoScreen extends GetView<DashboardController> {
     );
   }
 }
-

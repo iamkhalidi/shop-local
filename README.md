@@ -63,6 +63,8 @@ https://shop-local-4d81d.firebaseapp.com/
 >> Later
 
 
+    Recheck how many users can get in app
+
     user set location 
     deielvery fee
     save order in firebase 'order' collection - order details [id, userInfo]
