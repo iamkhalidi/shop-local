@@ -8,8 +8,7 @@ class LoginScreen extends GetView<AuthController> {
 
   @override
   Widget build(BuildContext context) {
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
+
 
     return Scaffold(
       appBar: AppBar(
@@ -36,7 +35,7 @@ class LoginScreen extends GetView<AuthController> {
 
                 // حقل البريد الإلكتروني
                 TextField(
-                  controller: emailController,
+                  controller: controller.emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(
                     labelText: 'البريد الإلكتروني',
@@ -48,7 +47,7 @@ class LoginScreen extends GetView<AuthController> {
 
                 // حقل كلمة المرور
                 TextField(
-                  controller: passwordController,
+                  controller: controller.passwordController,
                   obscureText: true,
                   decoration: const InputDecoration(
                     labelText: 'كلمة المرور',
@@ -83,16 +82,7 @@ class LoginScreen extends GetView<AuthController> {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     ),
                     onPressed: () {
-                      if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
-                        controller.login(emailController.text.trim(), passwordController.text.trim());
-                      } else {
-                        Get.snackbar(
-                          'تنبيه',
-                          'الرجاء تعبئة جميع الحقول',
-                          backgroundColor: Colors.orange,
-                          colorText: Colors.white,
-                        );
-                      }
+                      controller.login();
                     },
                     child: const Text('تسجيل الدخول', style: TextStyle(fontSize: 16)),
                   );

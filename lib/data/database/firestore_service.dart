@@ -36,4 +36,117 @@ class FirestoreService {
       return [];
     }
   }
+
+
+  // ====== 🌟 التحديث الجديد والمطور للمفضلة 🌟 ======
+
+  // 1. إضافة كائن المنتج كاملاً إلى مصفوفة المفضلة داخل مستند المستخدم
+  Future<void> addToFavorites(String uid, ProductModel product) async {
+    try {
+      await _db.collection('users').doc(uid).update({
+        'favorites': FieldValue.arrayUnion([product.toJson()])
+      });
+    } catch (e) {
+      print("❌ خطأ أثناء إضافة المنتج للمفضلة: $e");
+    }
+  }
+
+  // 2. إزالة المنتج من المفضلة بناءً على الـ id الخاص به لضمان الدقة
+  Future<void> removeFromFavorites(String uid, String productId) async {
+    try {
+      DocumentReference userDoc = _db.collection('users').doc(uid);
+
+      // جلب المستند الحالي للمستخدم
+      DocumentSnapshot snapshot = await userDoc.get();
+      if (snapshot.exists && snapshot.data() != null) {
+        Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+        List<dynamic> favorites = data['favorites'] ?? [];
+
+        // إزالة المنتج الذي يطابق الـ id المطلوب
+        favorites.removeWhere((item) => item['id'] == productId);
+
+        // تحديث القائمة بالكامل بعد الحذف محلياً
+        await userDoc.update({'favorites': favorites});
+      }
+    } catch (e) {
+      print("❌ خطأ أثناء إزالة المنتج من المفضلة: $e");
+    }
+  }
+
+  // 3. جلب قائمة المنتجات المفضلة كاملة بطلب واحد فقط (Fast & Efficient)
+  Future<List<ProductModel>> getUserFullFavorites(String uid) async {
+    try {
+      DocumentSnapshot doc = await _db.collection('users').doc(uid).get();
+      if (doc.exists && doc.data() != null) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        if (data['favorites'] != null) {
+          List<dynamic> favList = data['favorites'];
+          // تحويل الخريطة القادمة مباشرة إلى كائنات ProductModel
+          return favList.map((item) => ProductModel.fromJson(item as Map<String, dynamic>)).toList();
+        }
+      }
+      return [];
+    } catch (e) {
+      print("❌ خطأ أثناء جلب قائمة المفضلة: $e");
+      return [];
+    }
+  }
+
+
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+//
+// // ====== 🌟 السطور الجديدة الخاصة بالمفضلة 🌟 ======
+//
+// // إضافة منتج إلى قائمة المفضلة للمستخدم
+// Future<void> addToFavorites(String uid, String productId) async {
+//   try {
+//     await _db.collection('users').doc(uid).update({
+//       'favorites': FieldValue.arrayUnion([productId])
+//     });
+//   } catch (e) {
+//     print("❌ خطأ أثناء إضافة المنتج للمفضلة: $e");
+//   }
+// }
+//
+// // إزالة منتج من قائمة المفضلة للمستخدم
+// Future<void> removeFromFavorites(String uid, String productId) async {
+//   try {
+//     await _db.collection('users').doc(uid).update({
+//       'favorites': FieldValue.arrayRemove([productId])
+//     });
+//   } catch (e) {
+//     print("❌ خطأ أثناء إزالة المنتج من المفضلة: $e");
+//   }
+// }
+//
+// // جلب مصفوفة الـ IDs الخاصة بالمنتجات المفضلة للمستخدم
+// Future<List<String>> getUserFavoriteIds(String uid) async {
+//   try {
+//     DocumentSnapshot doc = await _db.collection('users').doc(uid).get();
+//     if (doc.exists && doc.data() != null) {
+//       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+//       if (data['favorites'] != null) {
+//         return List<String>.from(data['favorites']);
+//       }
+//     }
+//     return [];
+//   } catch (e) {
+//     print("❌ خطأ أثناء جلب معرفات المفضلة: $e");
+//     return [];
+//   }
+// }

@@ -1,3 +1,5 @@
+// lib/features/home/controller/home_controller.dart
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../data/database/firestore_service.dart';
@@ -7,23 +9,20 @@ import '../../categories/model/product_model.dart';
 class HomeController extends GetxController {
   final FirestoreService _firestoreService = FirestoreService();
 
-  // قوائم مراقبة تفاعلية من الفايربيس
   var categories = <CategoryModel>[].obs;
-  var productsList = <ProductModel>[].obs;
+
+  // ✨ خريطة ذكية تفاعلية لحفظ منتجات كل فئة بشكل معزول تماماً: [key: categoryId, value: List<ProductModel>]
+  var categoryProductsMap = <String, List<ProductModel>>{}.obs;
 
   var isLoadingCategories = true.obs;
   var isLoadingProducts = false.obs;
 
-  // مؤشر الفئة المختارة حالياً (0 تعني الفئة الأولى المجلوبة)
-  var selectedCategoryIndex = 0.obs;
-
   @override
   void onInit() {
     super.onInit();
-    loadHomeData(); // جلب البيانات فور تحميل الصفحة
+    loadHomeData();
   }
 
-  // دالة جلب الفئات والمنتجات معاً
   Future<void> loadHomeData() async {
     try {
       isLoadingCategories.value = true;
@@ -31,8 +30,11 @@ class HomeController extends GetxController {
 
       if (fetchedCategories.isNotEmpty) {
         categories.assignAll(fetchedCategories);
-        // جلب منتجات أول فئة تلقائياً بعد تحميل الفئات
-        await fetchProductsForSelectedCategory(fetchedCategories[0].id);
+
+        // ✨ جلب وتحميل المنتجات لكل الفئات بشكل معزول وتلقائي لتوزيعها بشكل سليم وصحيح بالواجهة
+        for (var category in fetchedCategories) {
+          await fetchProductsForCategory(category.id);
+        }
       }
     } catch (e) {
       Get.snackbar('خطأ', 'فشل في تحميل بيانات الصفحة الرئيسية',
@@ -42,23 +44,18 @@ class HomeController extends GetxController {
     }
   }
 
-  // جلب منتجات الفئة المحددة بالضغط
-  Future<void> fetchProductsForSelectedCategory(String categoryId) async {
+  // جلب منتجات فئة محددة وحفظها بداخل المعرف الخاص بها في الخريطة
+  Future<void> fetchProductsForCategory(String categoryId) async {
     try {
       isLoadingProducts.value = true;
       var fetchedProducts = await _firestoreService.getProductsByCategory(categoryId.toLowerCase());
-      productsList.assignAll(fetchedProducts);
+
+      // حفظ المنتجات المجلوبة بداخل التبويب الخاص بالفئة الفعلي
+      categoryProductsMap[categoryId.toLowerCase()] = fetchedProducts;
     } catch (e) {
-      print("Error loading products in home: $e");
+      print("Error loading products for category ($categoryId) in home: $e");
     } finally {
       isLoadingProducts.value = false;
     }
-  }
-
-  // تغيير الفئة عند ضغط المستخدم على الشريط الأفقي
-  void changeCategory(int index) {
-    selectedCategoryIndex.value = index;
-    // جلب منتجات الفئة الجديدة بناءً على الـ ID الخاص بها من الفايربيس
-    fetchProductsForSelectedCategory(categories[index].id);
   }
 }

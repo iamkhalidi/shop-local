@@ -19,21 +19,3 @@ class DashboardBinding extends Bindings {
 }
 
 
-
-
-/*
-
-import 'package:get/get.dart';
-import '../controller/dashboard_controller.dart';
-import '../../home/controller/home_controller.dart';
-
-class DashboardBinding extends Bindings {
-  @override
-  void dependencies() {
-    // حقن كنترولر اللوحة الرئيسية
-    Get.lazyPut<DashboardController>(() => DashboardController());
-
-    // 👇 السطر السحري: حقن كنترولر الشاشة الرئيسية ليكون جاهزاً فور فتح الـ Dashboard
-    Get.lazyPut<HomeController>(() => HomeController());
-  }
-}*/

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../dashboard/controller/dashboard_controller.dart';
+import '../../favorites/widgets/favorite_button_widget.dart';
 import '../controller/products_controller.dart'; // استيراد الكنترولر الجديد للمنتجات
 
 class ProductInfoScreen extends GetView<DashboardController> {
@@ -23,12 +24,14 @@ class ProductInfoScreen extends GetView<DashboardController> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new),
           onPressed: () {
-            // إذا كان المؤشر الرئيسي للتبويب يقف على شاشة الرئيسية (0)، نعيده إلى الهوم مباشرة
-            if (controller.isComingFromHome.value) {
-              controller.changePage(0); // العودة لتبويب الرئيسية
-            } else {
-              controller.goBackInCategories(); // العودة الطبيعية لصفحة المنتجات داخل قسم الفئات
-            }
+            // إغلاق شاشة التفاصيل الحالية والعودة للشاشة السابقة أياً كانت (هوم أو مفضلة)
+            Get.back();
+            // // إذا كان المؤشر الرئيسي للتبويب يقف على شاشة الرئيسية (0)، نعيده إلى الهوم مباشرة
+            // if (controller.isComingFromHome.value) {
+            //   controller.changePage(0); // العودة لتبويب الرئيسية
+            // } else {
+            //   controller.goBackInCategories(); // العودة الطبيعية لصفحة المنتجات داخل قسم الفئات
+            // }
           },
         ),
       ),
@@ -41,14 +44,57 @@ class ProductInfoScreen extends GetView<DashboardController> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // حاوية محاكاة لصورة المنتج
-              Container(
-                height: 250,
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.grey.withOpacity(0.2)),
-                ),
-                child: const Icon(Icons.insert_photo_outlined, size: 100, color: Colors.grey),
+              Stack(
+                children: [
+                  // 🌟 عرض صورة المنتج الكبيرة الحقيقية بدل أيقونة الـ Photo المؤقتة 🌟
+                  Container(
+                    height: 250,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.grey.withOpacity(0.2)),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: product.imageUrl.isNotEmpty
+                          ? Image.network(
+                        product.imageUrl,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(Icons.insert_photo_outlined, size: 100, color: Colors.grey);
+                        },
+                      )
+                          : const Icon(Icons.insert_photo_outlined, size: 100, color: Colors.grey),
+                    ),
+                  ),
+                  // زر المفضلة في زاوية الصورة
+                  Positioned(
+                    top: 12,
+                    right: 12,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                            spreadRadius: 1,
+                          )
+                        ],
+                      ),
+                      padding: const EdgeInsets.all(4),
+                      child: FavoriteButton(product: product, size: 28), // حجم أكبر يتناسب مع شاشة التفاصيل
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
 
@@ -147,10 +193,3 @@ class ProductInfoScreen extends GetView<DashboardController> {
   }
 }
 
-
-
-
-//IconButton(
-//           icon: const Icon(Icons.arrow_back_ios_new),
-//           onPressed: () => controller.goBackInCategories(), // الرجوع لصفحة المنتجات السابقة عبر دالتك الأصلية
-//         )

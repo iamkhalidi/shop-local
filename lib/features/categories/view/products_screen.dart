@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../dashboard/controller/dashboard_controller.dart';
+import '../../favorites/widgets/favorite_button_widget.dart';
 import '../controller/products_controller.dart';
 
 class ProductsScreen extends GetView<DashboardController> {
@@ -31,7 +32,21 @@ class ProductsScreen extends GetView<DashboardController> {
         foregroundColor: Colors.black,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new),
-          onPressed: () => controller.goBackInCategories(), // الرجوع لصفحة الفئات السابقة عبر الكنترولر الخاص بك
+          onPressed: () {
+            // // الرجوع لصفحة الفئات السابقة عبر الكنترولر الخاص بك
+            // controller.goBackInCategories();
+
+            if (controller.isComingFromHome.value) {
+              // إذا كان قادماً من الهوم، يرجعه لتبويب الرئيسية ويصفر الشارة
+              controller.isComingFromHome.value = false;
+              controller.changePage(0);
+            } else {
+              // إذا كان يتصفح بشكل طبيعي من داخل تبويب الفئات، يرجعه لقائمة الفئات العامة
+              controller.goBackInCategories();
+            }
+
+
+            },
         ),
       ),
       body: Padding(
@@ -93,16 +108,39 @@ class ProductsScreen extends GetView<DashboardController> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            // أيقونة تمثل صورة المنتج مؤقتاً لحين ربط الروابط
+
+                            // 🌟 عرض صورة المنتج الحقيقية بدل الأيقونة المؤقتة 🌟
                             Expanded(
                               child: Container(
                                 decoration: BoxDecoration(
                                   color: Colors.grey[50],
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: const Icon(Icons.shopping_bag_outlined, size: 50, color: Colors.blue),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: product.imageUrl.isNotEmpty
+                                      ? Image.network(
+                                    product.imageUrl,
+                                    fit: BoxFit.cover,
+                                    loadingBuilder: (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return const Center(
+                                        child: SizedBox(
+                                          width: 24,
+                                          height: 24,
+                                          child: CircularProgressIndicator(strokeWidth: 2),
+                                        ),
+                                      );
+                                    },
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return const Icon(Icons.shopping_bag_outlined, size: 50, color: Colors.blue);
+                                    },
+                                  )
+                                      : const Icon(Icons.shopping_bag_outlined, size: 50, color: Colors.blue),
+                                ),
                               ),
                             ),
+
                             const SizedBox(height: 10),
 
                             // اسم المنتج الحقيقي القادم من الفايربيس
@@ -156,6 +194,13 @@ class ProductsScreen extends GetView<DashboardController> {
                             ),
                           ),
                         ),
+
+                      // 🌟 تم إضافة زر المفضلة هنا في أعلى اليمين داخل كارت المنتج
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: FavoriteButton(product: product, size: 22),
+                      ),
                     ],
                   ),
                 ),
@@ -168,3 +213,16 @@ class ProductsScreen extends GetView<DashboardController> {
   }
 }
 
+
+
+
+// // أيقونة تمثل صورة المنتج مؤقتاً لحين ربط الروابط
+// Expanded(
+// child: Container(
+// decoration: BoxDecoration(
+// color: Colors.grey[50],
+// borderRadius: BorderRadius.circular(12),
+// ),
+// child: const Icon(Icons.shopping_bag_outlined, size: 50, color: Colors.blue),
+// ),
+// ),

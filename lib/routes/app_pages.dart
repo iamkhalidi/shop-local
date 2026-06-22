@@ -11,7 +11,11 @@ import 'package:shop_local/features/auth/binding/auth_binding.dart'; // 🌟 ت�
 import 'package:shop_local/features/dashboard/binding/dashboard_binding.dart'; // 🌟 تم تعديل المسار هنا
 import 'package:shop_local/features/dashboard/view/dashboard_screen.dart'; // 🌟 تم تعديل المسار هنا
 import 'package:shop_local/features/profile/binding/profile_binding.dart'; // 🌟 تم تعديل المسار هنا
-import 'package:shop_local/features/profile/view/profile_screen.dart'; // 🌟 تم تعديل المسار هنا
+import 'package:shop_local/features/profile/view/profile_screen.dart';
+
+import '../features/categories/view/product_info_screen.dart';
+import '../features/favorites/binding/favorites_binding.dart';
+import '../features/favorites/view/favorites_screen.dart'; // 🌟 تم تعديل المسار هنا
 
 part 'app_routes.dart';
 
@@ -55,6 +59,17 @@ class AppPages {
     GetPage(
       name: _Paths.DASHBOARD,
       page: () => const DashboardScreen(),
+      binding: DashboardBinding(),
+    ),
+    GetPage(
+      name: _Paths.FAVORITES,
+      page: () => const FavoritesScreen(),
+      binding: FavoritesBinding(),
+    ),
+    GetPage(
+      name: _Paths.PRODUCT_INFO,
+      page: () => const ProductInfoScreen(),
+      // نمرر نفس باينديق الكاتيجوري لتظل الكنترولرز متصلة
       binding: DashboardBinding(),
     ),
   ];

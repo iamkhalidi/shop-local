@@ -9,6 +9,12 @@ class AuthController extends GetxController {
   Rxn<User> firebaseUser = Rxn<User>();
   var isLoading = false.obs;
 
+  // 🌟 السطور  الجديدة: نقل حقول النص إلى الكنترولر للحفاظ على ثباتها أثناء الـ Rebuild
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+
+
   @override
   void onInit() {
     super.onInit();
@@ -26,21 +32,41 @@ class AuthController extends GetxController {
     }
   }
 
+
   // --- 1. تسجيل الدخول ---
-  void login(String email, String password) async {
+  void login() async { // قمنا بإزالة الباراميترز لأنها أصبحت متوفرة محلياً في الكنترولر
     try {
+      final email = emailController.text.trim();
+      final password = passwordController.text.trim();
+
+      if (email.isEmpty || password.isEmpty) {
+        Get.snackbar(
+          'تنبيه',
+          'الرجاء تعبئة جميع الحقول',
+          backgroundColor: Colors.orange,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
       isLoading.value = true;
       await _auth.signInWithEmailAndPassword(email: email, password: password);
 
-      // 🌟 السر هنا: ننتظر ثانية واحدة فقط والتحميل شغال لكي يراه المستخدم ويكون الانتقال مريحاً للعين
       await Future.delayed(const Duration(seconds: 1));
-      checkUserStatus(); // التوجيه الصحيح بعد نجاح تسجيل الدخول
+
+      // 🌟 خطوة ذكية: تنظيف الحقول بعد نجاح تسجيل الدخول لكي لا تظل مكتوبة إذا سجل خروج مستقبلاً
+      emailController.clear();
+      passwordController.clear();
+
+      checkUserStatus();
     } on FirebaseAuthException catch (e) {
       _showErrorSnackBar(_getArabicErrorMessage(e.code));
     } finally {
       isLoading.value = false;
     }
   }
+
+
 
   // --- 2. إنشاء حساب جديد ---
 // --- 2. إنشاء حساب جديد مع فحص تكرار رقم الجوال ---
@@ -148,5 +174,3 @@ class AuthController extends GetxController {
     );
   }
 }
-
-

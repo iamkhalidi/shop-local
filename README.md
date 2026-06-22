@@ -35,7 +35,7 @@ https://shop-local-4d81d.firebaseapp.com/
 > Not Completed Yet
 
 
-    favorites list [collection in user collection]
+    favorites list [collection in user collection] + put it in profile screen
     cart logic
     cart ui
     'cart' with icon(quantiti of items in cart) + shakaing when new item added
@@ -50,6 +50,7 @@ https://shop-local-4d81d.firebaseapp.com/
     save order in firebase 'order' collection - order details [id, userInfo]
     1GB Memory usage in Chrome
     Privacy Policy - The Rights is saved with [name] 2026 (C) + returning terms
+    Make orders screen(in profile screen)
 
 
 
@@ -67,7 +68,9 @@ https://shop-local-4d81d.firebaseapp.com/
     save order in firebase 'order' collection - order details [id, userInfo]
     internet checker
     pdf order information file 
-    admen 
+    admen panel
+    reset password screen write "email msg in unwanted msgs"
+    app version
     localization ar en
     send order details to email
     ai
