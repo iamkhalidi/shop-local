@@ -72,6 +72,7 @@ https://shop-local-4d81d.firebaseapp.com/
 >> Later
 
 
+    "popular" category, contains popular items , customer chooses
     -user set location 
     -deielvery fee
     -pdf order information file 
