@@ -23,26 +23,59 @@ class HomeController extends GetxController {
     loadHomeData();
   }
 
+
+  // // القديمة
+  // Future<void> loadHomeData() async {
+  //   try {
+  //     isLoadingCategories.value = true;
+  //     var fetchedCategories = await _firestoreService.fetchAllCategories();
+  //
+  //     if (fetchedCategories.isNotEmpty) {
+  //       categories.assignAll(fetchedCategories);
+  //
+  //       // ✨ جلب وتحميل المنتجات لكل الفئات بشكل معزول وتلقائي لتوزيعها بشكل سليم وصحيح بالواجهة
+  //       for (var category in fetchedCategories) {
+  //         await fetchProductsForCategory(category.id);
+  //       }
+  //     }
+  //   } catch (e) {
+  //     Get.snackbar('خطأ', 'فشل في تحميل بيانات الصفحة الرئيسية',
+  //         backgroundColor: Colors.redAccent, colorText: Colors.white);
+  //   } finally {
+  //     isLoadingCategories.value = false;
+  //   }
+  // }
+
+  // الجديدة
   Future<void> loadHomeData() async {
     try {
       isLoadingCategories.value = true;
+
+      // 1. جلب الفئات أولاً (طلب سريع جداً)
       var fetchedCategories = await _firestoreService.fetchAllCategories();
 
       if (fetchedCategories.isNotEmpty) {
         categories.assignAll(fetchedCategories);
 
-        // ✨ جلب وتحميل المنتجات لكل الفئات بشكل معزول وتلقائي لتوزيعها بشكل سليم وصحيح بالواجهة
-        for (var category in fetchedCategories) {
-          await fetchProductsForCategory(category.id);
-        }
+        // 🚀 الحل السحري: تجهيز قائمة من الـ Futures ليتم تشغيلها معاً في الخلفية بالتوازي
+        List<Future<void>> productRequests = fetchedCategories.map((category) {
+          return fetchProductsForCategory(category.id);
+        }).toList();
+
+        // إطلاق كل طلبات الفئات دفعة واحدة والانتظار حتى تنتهي كلها معاً
+        await Future.wait(productRequests);
       }
     } catch (e) {
       Get.snackbar('خطأ', 'فشل في تحميل بيانات الصفحة الرئيسية',
           backgroundColor: Colors.redAccent, colorText: Colors.white);
     } finally {
+      // سيتوقف مؤشر التحميل فوراً بعد جلب الفئات ومنتجاتها معاً في ثوانٍ معدودة
       isLoadingCategories.value = false;
     }
   }
+
+
+
 
   // جلب منتجات فئة محددة وحفظها بداخل المعرف الخاص بها في الخريطة
   Future<void> fetchProductsForCategory(String categoryId) async {

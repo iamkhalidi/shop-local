@@ -21,6 +21,7 @@
     }
   },
   "hosting": {
+    "site": "shop-khalid",
     "public": "build/web",
     "ignore": [
       "firebase.json",
