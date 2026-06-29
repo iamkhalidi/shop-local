@@ -35,6 +35,8 @@ https://shop-local-4d81d.firebaseapp.com/
     *cart ui
     *cart item price * quantity 
     *'cart' with icon(quantiti of items in cart) + shakaing when new item added
+    *internet checker
+    *save order in firebase 'order' collection - order details [userInfo]
 
 
 
@@ -42,9 +44,7 @@ https://shop-local-4d81d.firebaseapp.com/
 > Not Completed Yet
 
 
-    1GB Memory usage in Chrome ( cause: when u press hot restart the app save the old build then run the new one that causes high memrory usage)
-    *internet checker
-    save order in firebase 'order' collection - order details [userInfo]
+
     Make orders screen(in profile screen)
 
     long loading on home screen categories 
@@ -55,11 +55,6 @@ https://shop-local-4d81d.firebaseapp.com/
     search feature in categories screen
     search feature in products screen
     Privacy Policy - The Rights is saved with [name] 2026 (C) + returning terms
-
-
-
-
-
     
 
     
@@ -69,7 +64,8 @@ https://shop-local-4d81d.firebaseapp.com/
 
     Recheck how many users can get in app
 
-    user set location 
+
+    -user set location 
     deielvery fee
     pdf order information file 
     admen panel

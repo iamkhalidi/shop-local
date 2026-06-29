@@ -15,7 +15,10 @@ import 'package:shop_local/features/profile/view/profile_screen.dart';
 
 import '../features/categories/view/product_info_screen.dart';
 import '../features/favorites/binding/favorites_binding.dart';
-import '../features/favorites/view/favorites_screen.dart'; // 🌟 تم تعديل المسار هنا
+import '../features/favorites/view/favorites_screen.dart';
+import '../features/orders/binding/orders_binding.dart';
+import '../features/orders/view/orders_info_screen.dart';
+import '../features/orders/view/orders_screen.dart'; // 🌟 تم تعديل المسار هنا
 
 part 'app_routes.dart';
 
@@ -70,6 +73,16 @@ class AppPages {
       name: _Paths.PRODUCT_INFO,
       page: () => const ProductInfoScreen(),
       // binding: DashboardBinding(),
+    ),
+
+    GetPage(
+      name: _Paths.ORDERS,
+      page: () => const OrdersScreen(),
+      binding: OrdersBinding(),
+    ),
+    GetPage(
+      name: _Paths.ORDER_INFO,
+      page: () => const OrderInfoScreen(),
     ),
   ];
 }

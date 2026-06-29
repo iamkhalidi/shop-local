@@ -1,0 +1,2 @@
+This folder contains data models for features. 
+Example: class Product { String name; int price; } 

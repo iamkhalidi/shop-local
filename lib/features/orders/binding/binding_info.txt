@@ -1,0 +1,38 @@
+This folder contains bindings to connect controllers to views (GetX). 
+
+
+--- 
+
+
+class AuthBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<AuthController>(() => AuthController());
+  }
+}
+
+ثم في الـ route:
+
+GetPage(
+  name: '/login',
+  page: () => LoginScreen(),
+  binding: AuthBinding(),
+)
+
+---
+
+GetX يتأكد من وجود Controller واحد فقط لكل Binding (ما لم تستخدم fenix أو permanent: true).
+
+عند الدخول إلى أي صفحة تستخدم نفس Binding، GetX يعيد استخدام نفس Controller الموجود بالفعل بدلاً من إنشاء جديد.
+
+
+
+---
+
+
+Binding = مسؤول عن إنشاء Controllers و Dependencies قبل فتح الصفحة.
+
+يجعل الكود أنظف، يسهل الصيانة، ويفصل الـ View عن منطق إنشاء Controllers.
+
+يمكن الاستغناء عنه في مشاريع صغيرة، لكنه شائع جدًا في المشاريع الكبيرة.
+

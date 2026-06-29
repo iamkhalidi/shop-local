@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../orders/controller/orders_controller.dart';
 import '../controller/cart_controller.dart';
 import '../model/cart_item_model.dart';
 import '../widgets/clear_cart_dialog.dart';
@@ -14,6 +15,9 @@ class CartScreen extends StatelessWidget {
     // final controller = Get.find(CartController());
     // 🚀 جلب النسخة المجهزة مسبقاً بدلاً من إعادة إنشائها
     final controller = Get.find<CartController>();
+
+    // 📦 حقن أو جلب نسخة الـ OrdersController لإدارة عملية تأكيد الطلب
+    final ordersController = Get.put(OrdersController());
 
     return Scaffold(
       appBar: AppBar(
@@ -119,13 +123,23 @@ class CartScreen extends StatelessWidget {
                     const SizedBox(height: 15),
                     SizedBox(
                       width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // كود إتمام الطلب الشراء
-                        },
-                        style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 12)),
-                        child: const Text('إتمام عملية الشراء', style: TextStyle(fontSize: 16)),
-                      ),
+                      child: Obx(() {
+                        // استخدام المؤشر في حال كان الطلب قيد الرفع في الفايرستور
+                        return ordersController.isLoading.value
+                            ? const Center(child: CircularProgressIndicator())
+                            : ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            backgroundColor: Colors.blue,
+                            foregroundColor: Colors.white,
+                          ),
+                          onPressed: () {
+                            // يمكنك تمرير رسوم توصيل اختيارية هنا لاحقاً، مثلاً: deliveryFee: 5.0
+                            ordersController.placeOrder(deliveryFee: 0.0);
+                          },
+                          child: const Text('إتمام عملية الشراء', style: TextStyle(fontSize: 16)),
+                        );
+                      }),
                     ),
                   ],
                 ),

@@ -1,0 +1,2 @@
+This folder contains controllers to manage state and logic. 
+Example: class ProductController extends GetxController { var items = [].obs; } 

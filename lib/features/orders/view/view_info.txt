@@ -1,0 +1,2 @@
+This folder contains views (screens) for the feature. 
+Example: class HomeScreen extends StatelessWidget { ... } 

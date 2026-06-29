@@ -12,6 +12,9 @@ abstract class Routes {
   static const DASHBOARD = _Paths.DASHBOARD;
   static const FAVORITES = _Paths.FAVORITES;
   static const PRODUCT_INFO = _Paths.PRODUCT_INFO;
+  // مسارات شاشات الطلبات الجديدة
+  static const ORDERS = _Paths.ORDERS;
+  static const ORDER_INFO = _Paths.ORDER_INFO;
 }
 
 abstract class _Paths {
@@ -25,4 +28,7 @@ abstract class _Paths {
   static const DASHBOARD = '/dashboard';
   static const FAVORITES = '/favorites';
   static const PRODUCT_INFO = '/product-info';
+
+  static const ORDERS = '/orders';
+  static const ORDER_INFO = '/order-info';
 }

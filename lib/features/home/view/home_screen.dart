@@ -27,6 +27,22 @@ class HomeScreen extends GetView<HomeController> {
         elevation: 0,
         centerTitle: true,
         actions: [
+          // 🚀 زر "طلباتي" الجديد المضاف
+          TextButton.icon(
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.orange,
+            ),
+            icon: const Icon(Icons.receipt_long, color: Colors.orange),
+            label: const Text(
+              'طلباتي',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+            onPressed: () {
+              Get.toNamed(Routes.ORDERS);
+            },
+          ),
+
+
           IconButton(
             icon: const Icon(Icons.favorite_border, color: Colors.redAccent, size: 26),
             onPressed: () {
