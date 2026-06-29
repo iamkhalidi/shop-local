@@ -40,6 +40,10 @@ https://shop-local-4d81d.firebaseapp.com/
     *save order in firebase 'order' collection - order details [userInfo]
     *Make orders screen(in profile screen)
     *cart to sub collection
+    *long loading on home screen categories 
+    *//on click show all on home screen it opens vegetables items only (or remove this button)
+
+
 
 
 
@@ -48,6 +52,11 @@ https://shop-local-4d81d.firebaseapp.com/
 > Not Completed Yet 'Features'
 
 
+
+
+    dialog 'are you sure you want to delete this item from the cart'
+    quantity circle of my orders button
+    shaking when adding item to cart + when confirm with audio
 
     admin panel:
     1: see order [with userinfo]
@@ -58,13 +67,15 @@ https://shop-local-4d81d.firebaseapp.com/
 
     search feature in categories screen
     search feature in products screen
-    long loading on home screen categories 
+
 
      *    *    *    *    *    *    *
 >> ui
 
 
+    contact us screen
     Privacy Policy - The Rights is saved with [name] 2026 (C) + returning terms 
+    rtl text arabic way
     reset password screen write "email msg in unwanted msgs"
 
     

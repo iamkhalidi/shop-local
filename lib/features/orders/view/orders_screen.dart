@@ -57,9 +57,26 @@ class OrdersScreen extends GetView<OrdersController> {
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'طلب #${order.id.substring(0, 8).toUpperCase()}',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            const TextSpan(
+                              text: 'طلب ',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black),
+                            ),
+                            // استخدام الـ Bidi.stripHtmlIfNeeded أو العزل لعرض الهاشتاج والـ ID من اليسار لليمين بشكل منسق دائماً
+                            TextSpan(
+                              text: '#${order.id.substring(0, 8).toUpperCase()}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.blueGrey, // يمكنك تغيير اللون ليميز رقم الطلب
+                                fontFamily: 'Roboto', // يفضل خط إنجليزي للأرقام والحروف ليكون منسقاً
+                              ),
+                            ),
+                          ],
+                        ),
+                        textDirection: TextDirection.rtl, // إجبار الترتيب يبدأ من اليمين (طلب ثم الرقم)
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
