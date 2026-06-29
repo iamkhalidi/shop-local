@@ -36,43 +36,48 @@ https://shop-local-4d81d.firebaseapp.com/
     *cart item price * quantity 
     *'cart' with icon(quantiti of items in cart) + shakaing when new item added
     *internet checker
+    // high memory usage 1gb "Hard truth: For large public e-commerce websites, Flutter Web is not the best choice due to high memory usage. Many teams use Flutter Web only for the Admin Dashboard, while building the public website with Next.js or React for better performance and SEO."
     *save order in firebase 'order' collection - order details [userInfo]
+    *Make orders screen(in profile screen)
+    *cart to sub collection
 
 
 
 
-> Not Completed Yet
+
+> Not Completed Yet 'Features'
 
 
 
-    Make orders screen(in profile screen)
-
-    long loading on home screen categories 
-
-     *    *    *    *    *    *    *
+    admin panel:
+    1: see order [with userinfo]
+    2: change order status
+    3: usersData[CRUD]
+    4: categories>prod [add/delete/update]
 
 
     search feature in categories screen
     search feature in products screen
-    Privacy Policy - The Rights is saved with [name] 2026 (C) + returning terms
-    
+    long loading on home screen categories 
+
+     *    *    *    *    *    *    *
+>> ui
+
+
+    Privacy Policy - The Rights is saved with [name] 2026 (C) + returning terms 
+    reset password screen write "email msg in unwanted msgs"
 
     
      *    *    *    *    *    *    *
 >> Later
 
 
-    Recheck how many users can get in app
-
-
     -user set location 
-    deielvery fee
-    pdf order information file 
-    admen panel
-    reset password screen write "email msg in unwanted msgs"
-    app version
-    localization ar en
-    send order details to email
+    -deielvery fee
+    -pdf order information file 
+    -app version
+    -localization ar en
+    -send order details to email
     ai
 
 

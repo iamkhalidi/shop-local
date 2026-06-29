@@ -26,23 +26,25 @@ class HomeScreen extends GetView<HomeController> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        actions: [
-          // 🚀 زر "طلباتي" الجديد المضاف
-          TextButton.icon(
+        leadingWidth: 110,
+        leading: Padding(
+          padding: const EdgeInsets.only(right: 8.0), // إزاحة خفيفة ليتناسق مع الحواف باللغة العربية
+          child: TextButton.icon(
             style: TextButton.styleFrom(
               foregroundColor: Colors.orange,
+              padding: EdgeInsets.zero, // تصفير البادينج الداخلي لتوفير مساحة أكبر للنص
             ),
-            icon: const Icon(Icons.receipt_long, color: Colors.orange),
+            icon: const Icon(Icons.receipt_long, color: Colors.orange, size: 20),
             label: const Text(
               'طلباتي',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
             ),
             onPressed: () {
               Get.toNamed(Routes.ORDERS);
             },
           ),
-
-
+        ),
+        actions: [
           IconButton(
             icon: const Icon(Icons.favorite_border, color: Colors.redAccent, size: 26),
             onPressed: () {
@@ -320,24 +322,3 @@ class HomeScreen extends GetView<HomeController> {
   }
 }
 
-
-
-//
-// Row(
-// mainAxisAlignment: MainAxisAlignment.spaceBetween,
-// children: [
-// Text(
-// '${product.currentPrice} ريال',
-// style: const TextStyle(
-// color: Colors.blue,
-// fontWeight: FontWeight.bold,
-// fontSize: 13
-// ),
-// ),
-// Icon(
-// Icons.add_circle,
-// color: Colors.blue.withOpacity(0.8),
-// size: 22
-// ),
-// ],
-// )
