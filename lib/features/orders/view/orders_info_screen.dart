@@ -225,6 +225,7 @@ class OrderInfoScreen extends StatelessWidget {
                         },
                       ),
                       barrierDismissible: false,
+
                     );
                   },
                 ),

@@ -46,6 +46,7 @@ dependencies:
   http: ^1.6.0
   universal_html: ^2.3.0
   uuid: ^4.5.3
+  audioplayers: ^6.8.1
 
 flutter_launcher_icons:
   android: "ic_launcher"
@@ -82,9 +83,10 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - lib/core/assets/sounds/mixkit-noti-sound.mp3
+    - lib/core/assets/sounds/mixkit-delete-order-noti-sound.mp3
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

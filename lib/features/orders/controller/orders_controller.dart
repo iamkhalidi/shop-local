@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
+import '../../../core/utils/notification_helper.dart';
 import '../../../data/repositories/orders_repository.dart';
 import '../../cart/controller/cart_controller.dart';
 import '../model/order_model.dart';
@@ -45,6 +46,7 @@ class OrdersController extends GetxController {
         onOrderConfirmed: () async {
           // هذه الدالة ستنفذ داخل الديالوج فقط إذا ضغط "نعم، متأكد"
           return await _executeOrderSaving(deliveryFee);
+
         },
         onConfirm: () async {
           await _executeCartClearing();
@@ -61,6 +63,10 @@ class OrdersController extends GetxController {
   Future<bool> _executeOrderSaving(double deliveryFee) async {
     try {
       isLoading.value = true;
+
+
+      // 🚀 استدعاء الإشعار الصوتي والسناك بار السعودي هنا مباشرة بعد تفريغ السلة بنجاح
+      await NotificationHelper.triggerOrderSuccessNotification();
 
       double itemsTotal = _cartController.totalPrice;
       double finalPrice = itemsTotal + deliveryFee;
@@ -94,7 +100,10 @@ class OrdersController extends GetxController {
       isLoading.value = true;
       await _ordersRepository.clearFirestoreCart();
       _cartController.cartItems.clear();
-      Get.snackbar("نجاح", "تم اعتماد طلبك وتفريغ السلة بنجاح.");
+
+      // // 🚀 استدعاء الإشعار الصوتي والسناك بار السعودي هنا مباشرة بعد تفريغ السلة بنجاح
+      // await NotificationHelper.triggerOrderSuccessNotification();
+      // Get.snackbar("نجاح", "تم اعتماد طلبك وتفريغ السلة بنجاح.");
     } catch (e) {
       Get.snackbar("تنبيه", "تم حفظ الطلب ولكن فشل تفريغ السلة سحابياً.");
     } finally {
@@ -108,7 +117,13 @@ class OrdersController extends GetxController {
     try {
       isLoading.value = true;
       await _ordersRepository.deleteOrder(orderId);
-      Get.snackbar("نجاح", "تم حذف الطلب بنجاح.");
+      // Get.snackbar("نجاح", "تم حذف الطلب بنجاح.",);
+      // 🚀 سناك بار أنيق وصغير مخصص لنجاح حذف الطلب
+
+// 🎵 🚀 استدعاء صوت الحذف والسناك بار المخصص مباشرة هنا
+      await NotificationHelper.triggerOrderDeleteNotification();
+
+
       return true;
     } catch (e) {
       Get.snackbar("خطأ", "فشل في حذف الطلب، يرجى المحاولة لاحقاً.");
@@ -117,6 +132,7 @@ class OrdersController extends GetxController {
       isLoading.value = false;
     }
   }
+
 
 
 }

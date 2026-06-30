@@ -52,11 +52,7 @@ https://shop-local-4d81d.firebaseapp.com/
 > Not Completed Yet 'Features'
 
 
-
-
-    dialog 'are you sure you want to delete this item from the cart'
-    quantity circle of my orders button
-    shaking when adding item to cart + when confirm with audio
+    Notifications sound when confirm an order & delete order
 
     admin panel:
     1: see order [with userinfo]
@@ -65,9 +61,16 @@ https://shop-local-4d81d.firebaseapp.com/
     4: categories>prod [add/delete/update]
 
 
-    search feature in categories screen
-    search feature in products screen
+    dialog 'are you sure you want to delete this item from the cart'
+    quantity circle of my orders button
+    shaking when adding item to cart + when confirm with audio
 
+
+
+
+    search feature in categories screen
+    search feature in products scree
+    make pass more harder
 
      *    *    *    *    *    *    *
 >> ui

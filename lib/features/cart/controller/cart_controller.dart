@@ -38,16 +38,46 @@ class CartController extends GetxController {
       CartItemModel cartItem = CartItemModel.fromProduct(product, quantity: 1);
       await _cartRepository.addToCart(userId, cartItem);
 
-      Get.snackbar(
-        'نجاح',
-        'تم إضافة (${product.name}) بنجاح إلى السلة',
-        snackPosition: SnackPosition.BOTTOM, // لكي تظهر في الأسفل تماماً فوق شريط التنقل
-        backgroundColor: Colors.green.withOpacity(0.9), // لون أخضر مريح للعين
-        colorText: Colors.white,
-        margin: const EdgeInsets.only(left: 15, right: 15, bottom: 90), // 💡 تم رفع الـ bottom لـ 90 لكي لا تتداخل مع الـ Bottom Navigation Bar الزجاجي المرتفع لديك
+      // Get.snackbar(
+      //   'نجاح',
+      //   'تم إضافة (${product.name}) بنجاح إلى السلة',
+      //   snackPosition: SnackPosition.BOTTOM, // لكي تظهر في الأسفل تماماً فوق شريط التنقل
+      //   backgroundColor: Colors.green.withOpacity(0.9), // لون أخضر مريح للعين
+      //   colorText: Colors.white,
+      //   margin: const EdgeInsets.only(left: 15, right: 15, bottom: 90), // 💡 تم رفع الـ bottom لـ 90 لكي لا تتداخل مع الـ Bottom Navigation Bar الزجاجي المرتفع لديك
+      //   duration: const Duration(seconds: 2),
+      //   borderRadius: 12,
+      //   icon: const Icon(Icons.check_circle_outline, color: Colors.white), // أيقونة تأكيد ناعمة
+      // );
+      Get.rawSnackbar(
+        messageText: Row(
+          mainAxisSize: MainAxisSize.min, // يجعل الـ Row يأخذ مساحة محتوياته فقط
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.check_circle_outline, color: Colors.white, size: 20),
+            const SizedBox(width: 8), // مسافة بسيطة بين الأيقونة والنص
+            Flexible(
+              child: Text(
+                "تم إضافة (${product.name}) بنجاح إلى السلة",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontFamily: 'Cairo',
+                  fontWeight: FontWeight.w500,
+                ),
+                overflow: TextOverflow.ellipsis, // لضمان عدم خروج النص إذا كان اسم المنتج طويلاً
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.green.withOpacity(0.95), // أخضر مريح وواضح
+        snackPosition: SnackPosition.BOTTOM,
         duration: const Duration(seconds: 2),
-        borderRadius: 12,
-        icon: const Icon(Icons.check_circle_outline, color: Colors.white), // أيقونة تأكيد ناعمة
+        // 💡 زدنا الهامش الأفقي إلى 50 ليصبح السناك بار صغيراً وملموماً في المنتصف
+        margin: const EdgeInsets.only(left: 50, right: 50, bottom: 95),
+        borderRadius: 30, // حواف دائرية بالكامل ليعطي شكل كبسولة أنيقة
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       );
 
 
