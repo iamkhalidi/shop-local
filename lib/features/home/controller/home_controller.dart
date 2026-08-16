@@ -57,13 +57,11 @@ class HomeController extends GetxController {
       if (fetchedCategories.isNotEmpty) {
         categories.assignAll(fetchedCategories);
 
-        // 🚀 الحل السحري: تجهيز قائمة من الـ Futures ليتم تشغيلها معاً في الخلفية بالتوازي
-        List<Future<void>> productRequests = fetchedCategories.map((category) {
-          return fetchProductsForCategory(category.id);
-        }).toList();
-
-        // إطلاق كل طلبات الفئات دفعة واحدة والانتظار حتى تنتهي كلها معاً
-        await Future.wait(productRequests);
+        // 🚀 الحل السحري المتطور: لا ننتظر تحميل كل المنتجات لكي لا نعلق الذاكرة والـ UI
+        // سنبدأ بجلب المنتجات في الخلفية، وستظهر تدريجياً في الواجهة
+        for (var category in fetchedCategories) {
+          fetchProductsForCategory(category.id);
+        }
       }
     } catch (e) {
       Get.snackbar('خطأ', 'فشل في تحميل بيانات الصفحة الرئيسية',
@@ -81,7 +79,11 @@ class HomeController extends GetxController {
   Future<void> fetchProductsForCategory(String categoryId) async {
     try {
       isLoadingProducts.value = true;
-      var fetchedProducts = await _firestoreService.getProductsByCategory(categoryId.toLowerCase());
+      // 🚀 تحسين الذاكرة: جلب 6 منتجات فقط لكل فئة في الصفحة الرئيسية بدلاً من الكل
+      var fetchedProducts = await _firestoreService.getProductsByCategory(
+        categoryId.toLowerCase(),
+        limit: 6,
+      );
 
       // حفظ المنتجات المجلوبة بداخل التبويب الخاص بالفئة الفعلي
       categoryProductsMap[categoryId.toLowerCase()] = fetchedProducts;

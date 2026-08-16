@@ -16,8 +16,8 @@ class CartScreen extends StatelessWidget {
     // 🚀 جلب النسخة المجهزة مسبقاً بدلاً من إعادة إنشائها
     final controller = Get.find<CartController>();
 
-    // 📦 حقن أو جلب نسخة الـ OrdersController لإدارة عملية تأكيد الطلب
-    final ordersController = Get.put(OrdersController());
+    // 📦 جلب نسخة الـ OrdersController لإدارة عملية تأكيد الطلب
+    final ordersController = Get.find<OrdersController>();
 
     return Scaffold(
       appBar: AppBar(
@@ -64,6 +64,7 @@ class CartScreen extends StatelessWidget {
                         width: 50,
                         height: 50,
                         fit: BoxFit.cover,
+                        cacheWidth: 100, // 🚀 تقييد حجم الصورة في الذاكرة
                         errorBuilder: (context, error, stackTrace) => const Icon(Icons.image),
                       ),
                       title: Text(item.productName),

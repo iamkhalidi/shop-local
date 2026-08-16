@@ -10,8 +10,8 @@ class CategoriesScreen extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    // حقن الكنترولر الخاص بالفئات للوصول لبيانات الفايربيس
-    final CategoriesController categoriesController = Get.put(CategoriesController());
+    // تم نقل حقن الكنترولر للـ DashboardBinding لضمان استهلاك ذاكرة أمثل
+    final CategoriesController categoriesController = Get.find<CategoriesController>();
 
     return Obx(() {
       if (controller.currentCategoryPage.value == 1) {

@@ -21,8 +21,7 @@ class DashboardScreen extends GetView<DashboardController> {
   @override
   Widget build(BuildContext context) {
 
-    // 🚀 التعديل الجوهري: حقن كنترولر السلة هنا ليصبح جاهزاً للشارة فور إقلاع التطبيق
-    final cartController = Get.put(CartController());
+    // 🚀 التعديل الجوهري: تم نقل حقن CartController للـ Binding لتقليل استهلاك الذاكرة
     final List<Widget> pages = [
       const HomeScreen(),
       const CategoriesScreen(),

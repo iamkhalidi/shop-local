@@ -22,6 +22,13 @@ class AuthController extends GetxController {
     firebaseUser.bindStream(_auth.userChanges());
   }
 
+  @override
+  void onClose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.onClose();
+  }
+
   // هذه الدالة الذكية التي سيستدعيها الـ SplashController بعد انتهاء الـ 3 ثوانٍ للأنيميشن
   void checkUserStatus() {
     if (_auth.currentUser == null) {

@@ -19,14 +19,19 @@ class FirestoreService {
   }
 
 
-  // جلب قائمة المنتجات التابعة لفئة معينة عبر الـ Subcollection
-  Future<List<ProductModel>> getProductsByCategory(String categoryId) async {
+  // جلب قائمة المنتجات التابعة لفئة معينة عبر الـ Subcollection (مع خيار التحديد لتقليل الذاكرة)
+  Future<List<ProductModel>> getProductsByCategory(String categoryId, {int? limit}) async {
     try {
-      QuerySnapshot snapshot = await _db
+      Query query = _db
           .collection('categories')
           .doc(categoryId)
-          .collection('products')
-          .get();
+          .collection('products');
+      
+      if (limit != null) {
+        query = query.limit(limit);
+      }
+
+      QuerySnapshot snapshot = await query.get();
 
       return snapshot.docs
           .map((doc) => ProductModel.fromJson(doc.data() as Map<String, dynamic>))

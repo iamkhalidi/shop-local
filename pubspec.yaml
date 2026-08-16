@@ -87,7 +87,6 @@ flutter:
     - lib/core/assets/sounds/mixkit-noti-sound.mp3
     - lib/core/assets/sounds/mixkit-delete-order-noti-sound.mp3
 
-
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
@@ -100,15 +99,10 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   # fonts:
-  #   - family: Schyler
+  #   - family: Cairo
   #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
+  #       - asset: lib/core/assets/fonts/Cairo-Regular.ttf
+  #       - asset: lib/core/assets/fonts/Cairo-Bold.ttf
   #         weight: 700
   #
   # For details regarding fonts from package dependencies,

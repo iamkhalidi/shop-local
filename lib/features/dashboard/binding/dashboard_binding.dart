@@ -1,4 +1,8 @@
 import 'package:get/get.dart';
+import '../../cart/controller/cart_controller.dart';
+import '../../categories/controller/categories_controller.dart';
+import '../../favorites/controller/favorites_controller.dart';
+import '../../orders/controller/orders_controller.dart';
 import '../controller/dashboard_controller.dart';
 import '../../home/controller/home_controller.dart';
 // 👇 استيراد الكنترولر الجديد للمنتجات
@@ -15,6 +19,12 @@ class DashboardBinding extends Bindings {
 
     // 🌟 السطر السحري الجديد: حقن الـ ProductsController ليكون جاهزاً بشكل كسلان في الذاكرة
     Get.lazyPut<ProductsController>(() => ProductsController());
+
+    // 🚀 إضافة الـ CartController والـ CategoriesController بآلية كسلانة لتقليل استهلاك الذاكرة الأولي
+    Get.lazyPut<CartController>(() => CartController());
+    Get.lazyPut<CategoriesController>(() => CategoriesController());
+    Get.lazyPut<OrdersController>(() => OrdersController());
+    Get.lazyPut<FavoritesController>(() => FavoritesController());
   }
 }
 

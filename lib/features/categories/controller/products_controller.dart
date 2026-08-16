@@ -17,8 +17,11 @@ class ProductsController extends GetxController {
   Future<void> fetchProducts(String categoryId) async {
     try {
       isLoadingProducts.value = true;
-      // تحويل الـ ID للأحرف الصغيرة ليطابق الفايربيس تماماً (مثلاً: Juices تصبح juices)
-      var fetchedProducts = await _firestoreService.getProductsByCategory(categoryId.toLowerCase());
+      // 🚀 تحسين الذاكرة: جلب 20 منتجاً كحد أقصى عند التصفح العميق للفئة
+      var fetchedProducts = await _firestoreService.getProductsByCategory(
+        categoryId.toLowerCase(),
+        limit: 20,
+      );
 
       productsList.assignAll(fetchedProducts);
     } catch (e) {

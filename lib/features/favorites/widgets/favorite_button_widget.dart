@@ -15,8 +15,8 @@ class FavoriteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // التأكد من عمل Injection أو إيجاد الكنترولر بأمان
-    final favoritesController = Get.put(FavoritesController());
+    // التأكد من جلب الكنترولر بأمان من الـ Binding
+    final favoritesController = Get.find<FavoritesController>();
 
     return Obx(() {
       final isFav = favoritesController.isFavorite(product.id);

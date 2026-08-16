@@ -117,6 +117,7 @@ class ProductsScreen extends GetView<DashboardController> {
                                       ? Image.network(
                                     product.imageUrl,
                                     fit: BoxFit.cover,
+                                    cacheWidth: 400, // 🚀 تقييد استهلاك الذاكرة في الشبكة
                                     loadingBuilder: (context, child, loadingProgress) {
                                       if (loadingProgress == null) return child;
                                       return const Center(

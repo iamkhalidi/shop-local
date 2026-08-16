@@ -209,6 +209,7 @@ class HomeScreen extends GetView<HomeController> {
                                             child: Image.network(
                                               product.imageUrl,
                                               fit: BoxFit.cover,
+                                              cacheWidth: 300, // 🚀 تقييد حجم الصورة في الذاكرة للويب
                                               loadingBuilder: (context, child, loadingProgress) {
                                                 if (loadingProgress == null) return child;
                                                 return const Center(

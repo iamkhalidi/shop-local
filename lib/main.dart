@@ -44,33 +44,36 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final connectivityService = ConnectivityService.instance;
-
-    return Obx(() {
-      final bool isOffline = connectivityService.status.value == ConnectivityStatus.offline;
-
-      // 🌟 هنا تم إصلاح الخطأ بإضافة كملة return قبل الـ GetMaterialApp
-      return GetMaterialApp(
-        title: "Shop Local",
-        debugShowCheckedModeBanner: false,
-        initialBinding: AuthBinding(),
-        initialRoute: AppPages.INITIAL,
-        getPages: AppPages.routes,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          useMaterial3: true,
-          textTheme: GoogleFonts.cairoTextTheme(Theme.of(context).textTheme),
+    return GetMaterialApp(
+      title: "Shop Local",
+      debugShowCheckedModeBanner: false,
+      initialBinding: AuthBinding(),
+      initialRoute: AppPages.INITIAL,
+      getPages: AppPages.routes,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        useMaterial3: true,
+        fontFamily: 'Cairo',
+        textTheme: const TextTheme(
+          // 🚀 إضافة خطوط نظام قوية كبديل لمنع استهلاك الرام في البحث عن Noto
+          bodyLarge: TextStyle(fontFamilyFallback: ['Arial', 'sans-serif']),
+          bodyMedium: TextStyle(fontFamilyFallback: ['Arial', 'sans-serif']),
+          displayLarge: TextStyle(fontFamilyFallback: ['Arial', 'sans-serif']),
         ),
-        builder: (context, child) {
+      ),
+      builder: (context, child) {
+        final connectivityService = ConnectivityService.instance;
+        return Obx(() {
+          final bool isOffline = connectivityService.status.value == ConnectivityStatus.offline;
           return Stack(
             children: [
               if (child != null) child,
               if (isOffline) const NoInternetOverlay(),
             ],
           );
-        },
-      );
-    });
+        });
+      },
+    );
   }
 } // 🌟 تم تعديل القوس هنا ليغلق الكلاس بشكل صحيح بدلاً من الفاصلة التي كانت موجودة بالخطأ
 

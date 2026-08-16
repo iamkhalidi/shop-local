@@ -60,6 +60,7 @@ https://shop-local-4d81d.firebaseapp.com/
     3: usersData[CRUD]
     4: categories>prod [add/delete/update]
 
+    add product to cart "add loading"
 
     dialog 'are you sure you want to delete this item from the cart'
     quantity circle of my orders button
