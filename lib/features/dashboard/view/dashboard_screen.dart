@@ -34,10 +34,12 @@ class DashboardScreen extends GetView<DashboardController> {
       extendBody: true,
       body: Stack(
         children: [
-          Obx(() => IndexedStack(
-            index: controller.currentIndex.value,
-            children: pages,
-          )),
+          SizedBox.expand( // 🚀 إجبار المحتوى على ملء كامل الشاشة ليدفع الفوتر للأسفل
+            child: Obx(() => IndexedStack(
+              index: controller.currentIndex.value,
+              children: pages,
+            )),
+          ),
           // 🌟 وضع مستضيف السناك بار هنا ليظهر فوق المحتوى وخلف الـ BottomNavigationBar
           const CustomSnackbarHost(),
         ],

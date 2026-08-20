@@ -38,84 +38,97 @@ class OrdersScreen extends GetView<OrdersController> {
         }
 
         return RefreshIndicator(
-          onRefresh: () async {
-            controller.bindOrdersStream();
-          },
-          child: ListView.builder(
-            padding: const EdgeInsets.all(12),
-            itemCount: controller.orders.length,
-            itemBuilder: (context, index) {
-              final order = controller.orders[index];
-              final statusColor = _getStatusColor(order.status);
+          onRefresh: () => controller.fetchOrders(),
+          child: CustomScrollView(
+            controller: controller.scrollController,
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsets.all(12),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final order = controller.orders[index];
+                      final statusColor = _getStatusColor(order.status);
 
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                elevation: 2,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.all(15),
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text.rich(
-                        TextSpan(
-                          children: [
-                            const TextSpan(
-                              text: 'طلب ',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black),
-                            ),
-                            // استخدام الـ Bidi.stripHtmlIfNeeded أو العزل لعرض الهاشتاج والـ ID من اليسار لليمين بشكل منسق دائماً
-                            TextSpan(
-                              text: '#${order.id.substring(0, 8).toUpperCase()}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: Colors.blueGrey, // يمكنك تغيير اللون ليميز رقم الطلب
-                                fontFamily: 'Roboto', // يفضل خط إنجليزي للأرقام والحروف ليكون منسقاً
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.all(15),
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text.rich(
+                                TextSpan(
+                                  children: [
+                                    const TextSpan(
+                                      text: 'طلب ',
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black),
+                                    ),
+                                    TextSpan(
+                                      text: '#${order.id.substring(0, 8).toUpperCase()}',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        color: Colors.blueGrey,
+                                        fontFamily: 'Roboto',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                textDirection: TextDirection.rtl,
                               ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                decoration: BoxDecoration(
+                                  color: statusColor.withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  order.status.arabicName,
+                                  style: TextStyle(color: statusColor, fontWeight: FontWeight.bold, fontSize: 12),
+                                ),
+                              ),
+                            ],
+                          ),
+                          subtitle: Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'الإجمالي: ${order.totalPrice.toStringAsFixed(2)} ريال',
+                                  style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  '${order.createdAt.day}/${order.createdAt.month}/${order.createdAt.year}  |  ${order.createdAt.hour.toString().padLeft(2, '0')}:${order.createdAt.minute.toString().padLeft(2, '0')}',
+                                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
+                          trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                          onTap: () {
+                            Get.toNamed('/order-info', arguments: order);
+                          },
                         ),
-                        textDirection: TextDirection.rtl, // إجبار الترتيب يبدأ من اليمين (طلب ثم الرقم)
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          color: statusColor.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          order.status.arabicName,
-                          style: TextStyle(color: statusColor, fontWeight: FontWeight.bold, fontSize: 12),
-                        ),
-                      ),
-                    ],
+                      );
+                    },
+                    childCount: controller.orders.length,
                   ),
-                  subtitle: Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'الإجمالي: \$${order.totalPrice.toStringAsFixed(2)}',
-                          style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                        ),
-                        // 🕒 عرض التاريخ مع الساعة والدقيقة بتنسيق خانتين
-                        Text(
-                          '${order.createdAt.day}/${order.createdAt.month}/${order.createdAt.year}  |  ${order.createdAt.hour.toString().padLeft(2, '0')}:${order.createdAt.minute.toString().padLeft(2, '0')}',
-                          style: const TextStyle(color: Colors.grey, fontSize: 12),
-                        ),
-                      ],
-                    ),
-                  ),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-                  onTap: () {
-                    // الانتقال لصفحة تفاصيل الطلب وتمرير كائن الـ order الحالي
-                    Get.toNamed('/order-info', arguments: order);
-                  },
                 ),
-              );
-            },
+              ),
+              // 🚀 مؤشر تحميل عند جلب المزيد من الطلبات
+              if (controller.isFetchingMore.value)
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+              const SliverToBoxAdapter(child: SizedBox(height: 50)),
+            ],
           ),
         );
       }),

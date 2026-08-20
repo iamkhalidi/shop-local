@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controller/auth_controller.dart';
 import '../../../routes/app_pages.dart';
+import '../../../services/store_service.dart';
 
 class LoginScreen extends GetView<AuthController> {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-
+    final storeService = StoreService.instance;
 
     return Scaffold(
       appBar: AppBar(
@@ -26,11 +27,39 @@ class LoginScreen extends GetView<AuthController> {
               children: [
                 const Icon(Icons.local_mall, size: 80, color: Colors.blue),
                 const SizedBox(height: 20),
-                const Text(
-                  'مرحباً بك في Shop Local',
+                Obx(() => Text(
+                  'مرحباً بك في ${storeService.storeName.value}',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis, // 🚀 منع الـ Overflow
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                )),
+                const SizedBox(height: 10),
+                
+                // 🕒 عرض أوقات العمل بشكل أنيق
+                Obx(() {
+                  final config = storeService.storeConfig.value;
+                  if (config == null || config.openTime.isEmpty) return const SizedBox.shrink();
+                  return Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.access_time, size: 16, color: Colors.blue),
+                        const SizedBox(width: 8),
+                        Text(
+                          'أوقات العمل: من ${config.openTime} إلى ${config.closeTime}',
+                          style: const TextStyle(fontSize: 12, color: Colors.blueGrey),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
                 const SizedBox(height: 40),
 
                 // حقل البريد الإلكتروني

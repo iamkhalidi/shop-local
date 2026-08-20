@@ -5,6 +5,7 @@ import 'package:intl_phone_field/countries.dart'; // 👈 تأكد من وجود
 import '../../../core/constants/countries_list.dart';
 import '../controller/auth_controller.dart';
 import '../../../routes/app_pages.dart';
+import '../../../services/store_service.dart';
 
 class RegisterScreen extends GetView<AuthController> {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -14,6 +15,7 @@ class RegisterScreen extends GetView<AuthController> {
     final nameController = TextEditingController();
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
+    final storeService = StoreService.instance;
 
     // نستخدم متغير داخلي مخصص للحزمة لحفظ القيمة الكاملة تلقائياً مع المفتاح
     String fullPhoneNumber = '';
@@ -33,11 +35,39 @@ class RegisterScreen extends GetView<AuthController> {
               children: [
                 const Icon(Icons.person_add, size: 80, color: Colors.blue),
                 const SizedBox(height: 20),
-                const Text(
-                  'انضم إلى Shop Local',
+                Obx(() => Text(
+                  'انضم إلى ${storeService.storeName.value}',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                )),
+                const SizedBox(height: 10),
+                
+                // 🕒 عرض أوقات العمل بشكل أنيق
+                Obx(() {
+                  final config = storeService.storeConfig.value;
+                  if (config == null || config.openTime.isEmpty) return const SizedBox.shrink();
+                  return Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.access_time, size: 16, color: Colors.blue),
+                        const SizedBox(width: 8),
+                        Text(
+                          'أوقات العمل: من ${config.openTime} إلى ${config.closeTime}',
+                          style: const TextStyle(fontSize: 12, color: Colors.blueGrey),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
                 const SizedBox(height: 30),
 
                 // 1. حقل الاسم الكامل
@@ -51,6 +81,23 @@ class RegisterScreen extends GetView<AuthController> {
                   ),
                 ),
                 const SizedBox(height: 15),
+
+                // 🌟 رسالة تنبيه بخصوص رقم الهاتف
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline, size: 14, color: Colors.orange),
+                      SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          'هذا الرقم سيعتمد للتواصل معك، يرجى التأكد من صحته.',
+                          style: TextStyle(fontSize: 12, color: Colors.orange, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
                 // 2. حقل رقم الجوال الذكي والمحدث بدون أخطاء
                 IntlPhoneField(

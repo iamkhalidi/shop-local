@@ -7,6 +7,7 @@ import '../../cart/controller/cart_controller.dart';
 import '../../dashboard/controller/dashboard_controller.dart';
 import '../../categories/controller/products_controller.dart';
 import '../controller/home_controller.dart';
+import '../../../services/store_service.dart';
 
 class HomeScreen extends GetView<HomeController> {
   const HomeScreen({Key? key}) : super(key: key);
@@ -15,18 +16,60 @@ class HomeScreen extends GetView<HomeController> {
   Widget build(BuildContext context) {
     final dashboardController = Get.find<DashboardController>();
     final productsController = Get.find<ProductsController>();
+    final storeService = StoreService.instance;
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text(
-            'Shop Local',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)
-        ),
+        title: Obx(() => Text(
+            storeService.storeName.value,
+            style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis, // 🚀 منع الـ Overflow بنقاط
+        )),
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
         leadingWidth: 110,
+        // 🕒 عرض أوقات العمل كمستطيل متدلي أسفل الـ AppBar
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(30),
+          child: Obx(() {
+            final config = storeService.storeConfig.value;
+            if (config == null || config.openTime.isEmpty) return const SizedBox.shrink();
+            return Container(
+              margin: const EdgeInsets.only(bottom: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade600,
+                borderRadius: const BorderRadius.vertical(bottom: Radius.circular(12)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.blue.withOpacity(0.2),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  )
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.access_time_filled, size: 12, color: Colors.white),
+                  const SizedBox(width: 6),
+                  Text(
+                    'نستقبلكم من ${config.openTime} إلى ${config.closeTime}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Cairo',
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ),
         leading: Padding(
           padding: const EdgeInsets.only(right: 8.0),
           child: TextButton.icon(
@@ -85,8 +128,13 @@ class HomeScreen extends GetView<HomeController> {
 
         return ListView.builder(
           padding: const EdgeInsets.symmetric(vertical: 16.0),
-          itemCount: controller.categories.length,
+          itemCount: controller.categories.length + 1, // 🚀 إضافة 1 لعرض العبارة الختامية
           itemBuilder: (context, categoryIndex) {
+            // التحقق هل وصلنا لنهاية قائمة الفئات
+            if (categoryIndex == controller.categories.length) {
+              return _buildFooter(dashboardController);
+            }
+
             final category = controller.categories[categoryIndex];
 
             return Column(
@@ -145,6 +193,38 @@ class HomeScreen extends GetView<HomeController> {
           },
         );
       }),
+    );
+  }
+
+  // 🚀 بناء العبارة الختامية لتوجيه المستخدم لصفحة الفئات
+  Widget _buildFooter(DashboardController dashboardController) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 30.0, horizontal: 20.0),
+      child: Column(
+        children: [
+          const Divider(color: Colors.grey, thickness: 0.2),
+          const SizedBox(height: 15),
+          GestureDetector(
+            onTap: () => dashboardController.changePage(1), // الانتقال لتبويب الفئات (Index 1)
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "انتقل إلى صفحة الفئات لرؤية جميع المنتجات",
+                  style: TextStyle(
+                    color: Colors.blue.shade700,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Icon(Icons.arrow_forward_ios, size: 14, color: Colors.blue.shade700),
+              ],
+            ),
+          ),
+          const SizedBox(height: 100), // مساحة إضافية لمنع التداخل مع الشريط السفلي الزجاجي
+        ],
+      ),
     );
   }
 

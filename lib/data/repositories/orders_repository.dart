@@ -25,7 +25,42 @@ class OrdersRepository {
     }
   }
 
-  // 🚀 2️⃣ دالة الاستماع المباشر للتغييرات (Real-time Stream) من الـ Sub-collection
+  // 🚀 2️⃣ جلب الطلبات بنظام التجزئة (Pagination)
+  Future<({List<OrderModel> orders, DocumentSnapshot? lastDoc})> getOrdersPaginated({
+    int limit = 7,
+    DocumentSnapshot? lastDocument,
+  }) async {
+    if (_userId.isEmpty) return (orders: <OrderModel>[], lastDoc: null);
+
+    try {
+      Query query = _firestore
+          .collection('users')
+          .doc(_userId)
+          .collection('orders')
+          .orderBy('createdAt', descending: true);
+
+      if (lastDocument != null) {
+        query = query.startAfterDocument(lastDocument);
+      }
+
+      query = query.limit(limit);
+      QuerySnapshot snapshot = await query.get();
+
+      List<OrderModel> orders = snapshot.docs.map((doc) {
+        return OrderModel.fromJson(doc.data() as Map<String, dynamic>);
+      }).toList();
+
+      return (
+        orders: orders,
+        lastDoc: snapshot.docs.isNotEmpty ? snapshot.docs.last : null,
+      );
+    } catch (e) {
+      print("❌ خطأ أثناء جلب الطلبات المجدولة: $e");
+      return (orders: <OrderModel>[], lastDoc: null);
+    }
+  }
+
+  // 🚀 2.1 دالة الاستماع المباشر للتغييرات (Real-time Stream)
   Stream<List<OrderModel>> listenToUserOrders() {
     if (_userId.isEmpty) {
       return Stream.value([]); // إرجاع قائمة فارغة إذا لم يكن هناك مستخدم مسجل دخول

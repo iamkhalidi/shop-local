@@ -5,6 +5,8 @@ import '../controller/categories_controller.dart'; // استيراد الكنت�
 import 'products_screen.dart';
 import 'product_info_screen.dart';
 
+import '../../../services/store_service.dart';
+
 class CategoriesScreen extends GetView<DashboardController> {
   const CategoriesScreen({Key? key}) : super(key: key);
 
@@ -12,6 +14,7 @@ class CategoriesScreen extends GetView<DashboardController> {
   Widget build(BuildContext context) {
     // تم نقل حقن الكنترولر للـ DashboardBinding لضمان استهلاك ذاكرة أمثل
     final CategoriesController categoriesController = Get.find<CategoriesController>();
+    final storeService = StoreService.instance;
 
     return Obx(() {
       if (controller.currentCategoryPage.value == 1) {
@@ -47,6 +50,48 @@ class CategoriesScreen extends GetView<DashboardController> {
             return const Text('الفئات', style: TextStyle(fontWeight: FontWeight.bold));
           }),
           centerTitle: true,
+          // 🕒 عرض أوقات العمل كمستطيل متدلي أسفل الـ AppBar في صفحة الفئات
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(30),
+            child: Obx(() {
+              final config = storeService.storeConfig.value;
+              // لا يظهر المستطيل في وضع البحث لترك مساحة للنتائج
+              if (config == null || config.openTime.isEmpty || categoriesController.isSearchMode.value) {
+                return const SizedBox.shrink();
+              }
+              return Container(
+                margin: const EdgeInsets.only(bottom: 5),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade600,
+                  borderRadius: const BorderRadius.vertical(bottom: Radius.circular(12)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.withOpacity(0.2),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    )
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.access_time_filled, size: 12, color: Colors.white),
+                    const SizedBox(width: 6),
+                    Text(
+                      'نستقبلكم من ${config.openTime} إلى ${config.closeTime}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Cairo',
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ),
           leading: Obx(() => categoriesController.isSearchMode.value
               ? IconButton(
                   icon: const Icon(Icons.close),

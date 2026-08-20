@@ -44,6 +44,8 @@ class ProductsScreen extends GetView<DashboardController> {
           return Text(
             controller.selectedCategoryDisplay.value,
             style: const TextStyle(fontWeight: FontWeight.bold),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis, // حماية من الأسماء الطويلة
           );
         }),
         leading: Obx(() => IconButton(

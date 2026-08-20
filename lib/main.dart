@@ -10,6 +10,7 @@ import 'features/auth/binding/auth_binding.dart';
 import 'package:web/web.dart' as web;
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:shop_local/services/store_service.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -40,7 +41,9 @@ void main() async {
     await Firebase.initializeApp();
   }
 
+  // حقن خدمات النظام الأساسية
   await Get.putAsync(() async => ConnectivityService());
+  await Get.putAsync(() async => StoreService());
 
   runApp(const MyApp());
 }
@@ -59,12 +62,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         useMaterial3: true,
-        fontFamily: 'Cairo',
-        textTheme: const TextTheme(
-          // 🚀 إضافة خطوط نظام قوية كبديل لمنع استهلاك الرام في البحث عن Noto
-          bodyLarge: TextStyle(fontFamilyFallback: ['Arial', 'sans-serif']),
-          bodyMedium: TextStyle(fontFamilyFallback: ['Arial', 'sans-serif']),
-          displayLarge: TextStyle(fontFamilyFallback: ['Arial', 'sans-serif']),
+        textTheme: GoogleFonts.cairoTextTheme(
+          ThemeData.light().textTheme,
         ),
       ),
       builder: (context, child) {

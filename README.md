@@ -55,7 +55,9 @@ https://shop-local-4d81d.firebaseapp.com/
     * when confirm with audio
     * add product to cart "add loading"
     * Notifications sound when confirm an order & delete order
-
+    
+    * search feature in categories screen
+    * search feature in products scree
 
     
 
@@ -68,13 +70,11 @@ https://shop-local-4d81d.firebaseapp.com/
 
 
 
-
+    write shop name from firebase 
     write in login screen this number will be ur number contect
 
 
 
-    search feature in categories screen
-    search feature in products scree
     make pass more harder
 
      *    *    *    *    *    *    *
@@ -92,6 +92,7 @@ https://shop-local-4d81d.firebaseapp.com/
 
 
     "popular" category, contains popular items , customer chooses
+    -update app color
     -user set location 
     -deielvery fee
     -pdf order information file 

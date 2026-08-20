@@ -8,30 +8,97 @@ import '../model/order_model.dart';
 import '../widgets/order_success_dialog.dart';
 import '../../../core/utils/app_snack.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:uuid/uuid.dart';
+import '../../../core/utils/notification_helper.dart';
+import '../../../data/repositories/orders_repository.dart';
+import '../../cart/controller/cart_controller.dart';
+import '../model/order_model.dart';
+import '../widgets/order_success_dialog.dart';
+import '../../../core/utils/app_snack.dart';
+
 class OrdersController extends GetxController {
   final OrdersRepository _ordersRepository = OrdersRepository();
   final CartController _cartController = Get.find<CartController>();
+  final ScrollController scrollController = ScrollController();
 
   var orders = <OrderModel>[].obs;
   var isLoading = false.obs;
 
+  // 🌟 متغيرات التجزئة (Pagination)
+  DocumentSnapshot? _lastDocument;
+  var isFetchingMore = false.obs;
+  var hasNextPage = true.obs;
+  final int _limit = 7;
+
   @override
   void onInit() {
-    bindOrdersStream();
     super.onInit();
+    fetchOrders();
+
+    // إعداد مستمع التمرير
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >= scrollController.position.maxScrollExtent - 100) {
+        fetchMoreOrders();
+      }
+    });
   }
 
-  void bindOrdersStream() {
-    isLoading.value = true;
-    orders.bindStream(
-        _ordersRepository.listenToUserOrders().map((fetchedOrders) {
-          fetchedOrders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-          return fetchedOrders;
-        })
-    );
-    orders.listen((_) {
-      if (isLoading.value) isLoading.value = false;
-    });
+  @override
+  void onClose() {
+    scrollController.dispose();
+    super.onClose();
+  }
+
+  // جلب الطلبات (التحميل الأول)
+  Future<void> fetchOrders() async {
+    try {
+      isLoading.value = true;
+      _lastDocument = null;
+      hasNextPage.value = true;
+
+      var result = await _ordersRepository.getOrdersPaginated(limit: _limit);
+
+      orders.assignAll(result.orders);
+      _lastDocument = result.lastDoc;
+
+      if (result.orders.length < _limit) {
+        hasNextPage.value = false;
+      }
+    } catch (e) {
+      print("Error fetching orders: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // جلب المزيد من الطلبات عند السكرول
+  Future<void> fetchMoreOrders() async {
+    if (isFetchingMore.value || !hasNextPage.value || isLoading.value) return;
+
+    try {
+      isFetchingMore.value = true;
+
+      var result = await _ordersRepository.getOrdersPaginated(
+        limit: _limit,
+        lastDocument: _lastDocument,
+      );
+
+      if (result.orders.isNotEmpty) {
+        orders.addAll(result.orders);
+        _lastDocument = result.lastDoc;
+      }
+
+      if (result.orders.length < _limit) {
+        hasNextPage.value = false;
+      }
+    } catch (e) {
+      print("Error fetching more orders: $e");
+    } finally {
+      isFetchingMore.value = false;
+    }
   }
 
   // 🚀 دالة الشراء المحسنة: تفتح السؤال أولاً قبل أي عملية حفظ
@@ -46,8 +113,11 @@ class OrdersController extends GetxController {
       OrderSuccessDialog(
         onOrderConfirmed: () async {
           // هذه الدالة ستنفذ داخل الديالوج فقط إذا ضغط "نعم، متأكد"
-          return await _executeOrderSaving(deliveryFee);
-
+          bool success = await _executeOrderSaving(deliveryFee);
+          if (success) {
+            fetchOrders(); // تحديث القائمة بعد نجاح الطلب
+          }
+          return success;
         },
         onConfirm: () async {
           await _executeCartClearing();
