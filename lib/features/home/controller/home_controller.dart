@@ -46,51 +46,43 @@ class HomeController extends GetxController {
   //   }
   // }
 
-  // الجديدة
+  // الجديدة والمطورة
   Future<void> loadHomeData() async {
     try {
       isLoadingCategories.value = true;
 
-      // 1. جلب الفئات أولاً (طلب سريع جداً)
+      // 1. جلب الفئات أولاً (طلب سريع)
       var fetchedCategories = await _firestoreService.fetchAllCategories();
 
       if (fetchedCategories.isNotEmpty) {
         categories.assignAll(fetchedCategories);
 
-        // 🚀 الحل السحري المتطور: لا ننتظر تحميل كل المنتجات لكي لا نعلق الذاكرة والـ UI
-        // سنبدأ بجلب المنتجات في الخلفية، وستظهر تدريجياً في الواجهة
+        // 🚀 تشغيل جلب المنتجات لكل فئة بشكل متوازي (Parallel) دون حجب الـ UI
+        // استخدمنا Future.wait لتسريع العملية الكلية أو إطلاقها بشكل حر
         for (var category in fetchedCategories) {
           fetchProductsForCategory(category.id);
         }
       }
     } catch (e) {
-      Get.snackbar('خطأ', 'فشل في تحميل بيانات الصفحة الرئيسية',
-          backgroundColor: Colors.redAccent, colorText: Colors.white);
+      print("Error in loadHomeData: $e");
     } finally {
-      // سيتوقف مؤشر التحميل فوراً بعد جلب الفئات ومنتجاتها معاً في ثوانٍ معدودة
       isLoadingCategories.value = false;
     }
   }
 
-
-
-
-  // جلب منتجات فئة محددة وحفظها بداخل المعرف الخاص بها في الخريطة
+  // جلب منتجات فئة محددة وحفظها بشكل مستقل
   Future<void> fetchProductsForCategory(String categoryId) async {
     try {
-      isLoadingProducts.value = true;
-      // 🚀 تحسين الذاكرة: جلب 6 منتجات فقط لكل فئة في الصفحة الرئيسية بدلاً من الكل
+      // 🚀 إزالة .toLowerCase() لأن الـ IDs في فايرستور حساسة لحالة الأحرف
       var fetchedProducts = await _firestoreService.getProductsByCategory(
-        categoryId.toLowerCase(),
+        categoryId, 
         limit: 6,
       );
 
-      // حفظ المنتجات المجلوبة بداخل التبويب الخاص بالفئة الفعلي
-      categoryProductsMap[categoryId.toLowerCase()] = fetchedProducts;
+      // تحديث الخريطة بالمنتجات الجديدة
+      categoryProductsMap[categoryId] = fetchedProducts;
     } catch (e) {
-      print("Error loading products for category ($categoryId) in home: $e");
-    } finally {
-      isLoadingProducts.value = false;
+      print("Error loading products for category ($categoryId): $e");
     }
   }
 }

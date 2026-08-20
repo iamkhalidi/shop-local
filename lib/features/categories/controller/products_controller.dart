@@ -17,9 +17,9 @@ class ProductsController extends GetxController {
   Future<void> fetchProducts(String categoryId) async {
     try {
       isLoadingProducts.value = true;
-      // 🚀 تحسين الذاكرة: جلب 20 منتجاً كحد أقصى عند التصفح العميق للفئة
+      // 🚀 إزالة .toLowerCase() لضمان مطابقة معرفات Firestore الصحيحة (Case Sensitive)
       var fetchedProducts = await _firestoreService.getProductsByCategory(
-        categoryId.toLowerCase(),
+        categoryId,
         limit: 20,
       );
 

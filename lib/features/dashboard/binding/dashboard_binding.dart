@@ -21,10 +21,12 @@ class DashboardBinding extends Bindings {
     Get.lazyPut<ProductsController>(() => ProductsController());
 
     // 🚀 إضافة الـ CartController والـ CategoriesController بآلية كسلانة لتقليل استهلاك الذاكرة الأولي
-    Get.lazyPut<CartController>(() => CartController());
-    Get.lazyPut<CategoriesController>(() => CategoriesController());
-    Get.lazyPut<OrdersController>(() => OrdersController());
-    Get.lazyPut<FavoritesController>(() => FavoritesController());
+    Get.lazyPut<CartController>(() => CartController(), fenix: true);
+    Get.lazyPut<CategoriesController>(() => CategoriesController(), fenix: true);
+    Get.lazyPut<OrdersController>(() => OrdersController(), fenix: true);
+    
+    // استخدام fenix: true يضمن إعادة إنشاء الكنترولر تلقائياً إذا تم حذفه من الذاكرة واحتاجته الواجهة مرة أخرى
+    Get.lazyPut<FavoritesController>(() => FavoritesController(), fenix: true);
   }
 }
 

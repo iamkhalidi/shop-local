@@ -18,7 +18,7 @@ class ProductsScreen extends GetView<DashboardController> {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Obx(() => Text(
-          controller.selectedCategoryName.value,
+          controller.selectedCategoryDisplay.value, // 🌟 استخدام اسم الفئة العربي الجديد
           style: const TextStyle(fontWeight: FontWeight.bold),
         )),
         centerTitle: true,

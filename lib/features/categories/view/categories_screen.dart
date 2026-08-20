@@ -58,8 +58,8 @@ class CategoriesScreen extends GetView<DashboardController> {
 
                 return GestureDetector(
                   onTap: () {
-                    // الانتقال لصفحة المنتجات وتمرير الـ ID الفرعي للفئة لجلب منتجاتها الـ 10
-                    controller.goToProducts(category.id);
+                    // الانتقال لصفحة المنتجات وتمرير الـ ID (للجلب) والاسم العربي (للعرض)
+                    controller.goToProducts(category.id, category.nameAr);
                   },
                   child: Container(
                     decoration: BoxDecoration(

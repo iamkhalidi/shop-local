@@ -67,7 +67,7 @@ class AppPages {
     GetPage(
       name: _Paths.FAVORITES,
       page: () => const FavoritesScreen(),
-      binding: FavoritesBinding(),
+      // binding: FavoritesBinding(), // تم التعليق لأن DashboardBinding يتكفل به بشكل أشمل (Global)
     ),
     GetPage(
       name: _Paths.PRODUCT_INFO,

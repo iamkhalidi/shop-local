@@ -70,12 +70,10 @@ class HomeScreen extends GetView<HomeController> {
         ],
       ),
       body: Obx(() {
-        // 1. مراقبة حالة تحميل الفئات
         if (controller.isLoadingCategories.value) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        // 2. التحقق من وجود فئات
         if (controller.categories.isEmpty) {
           return const Center(
             child: Text(
@@ -85,20 +83,15 @@ class HomeScreen extends GetView<HomeController> {
           );
         }
 
-        // 3. بناء المصفوفة الرأسية لجميع الفئات أسفل بعضها
         return ListView.builder(
           padding: const EdgeInsets.symmetric(vertical: 16.0),
           itemCount: controller.categories.length,
           itemBuilder: (context, categoryIndex) {
             final category = controller.categories[categoryIndex];
 
-            // جلب المنتجات المفلترة الخاصة بهذه الفئة فقط من خريطة الكنترولر
-            final categoryProducts = controller.categoryProductsMap[category.id.toLowerCase()] ?? [];
-
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // رأس الفئة (اسم الفئة) - تطبيق RTL هنا لتأكيد محاذاة النص لليمين
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                   child: Directionality(
@@ -114,213 +107,137 @@ class HomeScreen extends GetView<HomeController> {
                               color: Colors.black87
                           ),
                         ),
-                        // 🛠️ تم وضع زر عرض الكل في كومنت بناءً على طلبك
-                        /*
-                        TextButton(
-                          onPressed: () {
-                            dashboardController.selectedCategoryName.value = category.id;
-                            dashboardController.isComingFromHome.value = true;
-                            dashboardController.currentCategoryPage.value = 1;
-                            dashboardController.currentIndex.value = 1;
-                          },
-                          child: const Row(
-                            children: [
-                              Text('عرض الكل', style: TextStyle(color: Colors.blue, fontSize: 13)),
-                              Icon(Icons.arrow_forward_ios, size: 11, color: Colors.blue),
-                            ],
-                          ),
-                        ),
-                        */
                       ],
                     ),
                   ),
                 ),
 
-                // مصفوفة المنتجات الأفقية الخاصة بالفئة الحالية
-                SizedBox(
-                  height: 240,
-                  child: controller.isLoadingProducts.value
-                      ? const Center(child: CircularProgressIndicator())
-                      : categoryProducts.isEmpty
-                      ? const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        'لا توجد منتجات متوفرة في هذه الفئة.',
-                        style: TextStyle(color: Colors.grey, fontSize: 13),
-                      ),
-                    ),
-                  )
-                      : ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    itemCount: categoryProducts.length,
-                    itemBuilder: (context, productIndex) {
-                      final product = categoryProducts[productIndex];
-
-                      return GestureDetector(
-                        onTap: () {
-                          // 1. تحديد المنتج المختار فوراً في الكنترولر المخصص له
-                          Get.find<ProductsController>().selectedProduct.value = product;
-
-                          // 2. إخبار شاشة التفاصيل أننا جئنا من الهوم (لأجل زر الرجوع)
-                          dashboardController.isComingFromHome.value = true;
-
-                          // 3. الانتقال الاحترافي المباشر كشاشة كاملة دون تداخل التبويبات
-                          Get.toNamed(Routes.PRODUCT_INFO);
-                        },
-                        child: Container(
-                          width: 160,
-                          margin: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 6.0),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: Colors.grey.withOpacity(0.12)),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.06),
-                                blurRadius: 6,
-                                spreadRadius: 1,
-                                offset: const Offset(0, 2),
+                // 🚀 تحسين: جعل كل قائمة منتجات تفاعلية بشكل مستقل
+                Obx(() {
+                  final categoryProducts = controller.categoryProductsMap[category.id] ?? [];
+                  
+                  return SizedBox(
+                    height: 240,
+                    child: categoryProducts.isEmpty 
+                        ? (controller.categoryProductsMap.containsKey(category.id) 
+                            ? const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text('لا توجد منتجات حالياً.', style: TextStyle(color: Colors.grey, fontSize: 13)),
+                                ),
                               )
-                            ],
+                            : const Center(child: SizedBox(width: 30, height: 30, child: CircularProgressIndicator(strokeWidth: 2)))) // لودر صغير خاص بالفئة
+                        : ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                            itemCount: categoryProducts.length,
+                            itemBuilder: (context, productIndex) {
+                              final product = categoryProducts[productIndex];
+                              return _buildProductCard(product, dashboardController);
+                            },
                           ),
-                          child: Stack(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Directionality(
-                                  textDirection: TextDirection.rtl, // 🚀 تطبيق اتجاه النص لليمين داخل الكارت فقط
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.start, // يبدأ من اليمين بسبب الـ Directionality
-                                    children: [
-                                      Expanded(
-                                        child: Container(
-                                          width: double.infinity,
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey[50],
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                          child: product.imageUrl.isNotEmpty
-                                              ? ClipRRect(
-                                            borderRadius: BorderRadius.circular(12),
-                                            child: Image.network(
-                                              product.imageUrl,
-                                              fit: BoxFit.cover,
-                                              cacheWidth: 300, // 🚀 تقييد حجم الصورة في الذاكرة للويب
-                                              loadingBuilder: (context, child, loadingProgress) {
-                                                if (loadingProgress == null) return child;
-                                                return const Center(
-                                                  child: SizedBox(
-                                                    width: 20,
-                                                    height: 20,
-                                                    child: CircularProgressIndicator(strokeWidth: 2),
-                                                  ),
-                                                );
-                                              },
-                                              errorBuilder: (context, error, stackTrace) {
-                                                return const Icon(
-                                                    Icons.shopping_bag_outlined,
-                                                    size: 44,
-                                                    color: Colors.blue
-                                                );
-                                              },
-                                            ),
-                                          )
-                                              : const Icon(
-                                              Icons.shopping_bag_outlined,
-                                              size: 44,
-                                              color: Colors.blue
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 10),
-
-                                      Text(
-                                        product.name,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 13,
-                                            color: Colors.black87
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      const SizedBox(height: 2),
-
-                                      Text(
-                                        "${product.sizeVolume > 0 ? product.sizeVolume : ''} ${product.unitType}",
-                                        style: const TextStyle(color: Colors.grey, fontSize: 11),
-                                      ),
-                                      const SizedBox(height: 8),
-
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            '${product.currentPrice} ريال',
-                                            style: const TextStyle(
-                                                color: Colors.blue,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 13
-                                            ),
-                                          ),
-                                          GestureDetector(
-                                            behavior: HitTestBehavior.opaque,
-                                            onTap: () async {
-                                              await Get.find<CartController>().addProductToCart(product);
-                                            },
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(4.0),
-                                              child: Icon(
-                                                  Icons.add_circle,
-                                                  color: Colors.blue.withOpacity(0.8),
-                                                  size: 22
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-
-                              if (product.hasDiscount)
-                                Positioned(
-                                  top: 8,
-                                  left: 8,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                                    decoration: BoxDecoration(
-                                      color: Colors.redAccent,
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    child: const Text(
-                                      "خصم",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 9,
-                                          fontWeight: FontWeight.bold
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                  );
+                }),
                 const SizedBox(height: 12),
               ],
             );
           },
         );
       }),
+    );
+  }
+
+  // دالة مساعدة لبناء الكارت لتقليل حجم الكود داخل الـ build
+  Widget _buildProductCard(dynamic product, dynamic dashboardController) {
+    return GestureDetector(
+      onTap: () {
+        Get.find<ProductsController>().selectedProduct.value = product;
+        dashboardController.isComingFromHome.value = true;
+        Get.toNamed(Routes.PRODUCT_INFO);
+      },
+      child: Container(
+        width: 160,
+        margin: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 6.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.withOpacity(0.12)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.06),
+              blurRadius: 6,
+              spreadRadius: 1,
+              offset: const Offset(0, 2),
+            )
+          ],
+        ),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Directionality(
+                textDirection: TextDirection.rtl,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[50],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: product.imageUrl.isNotEmpty
+                            ? ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            product.imageUrl,
+                            fit: BoxFit.cover,
+                            cacheWidth: 300,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)));
+                            },
+                            errorBuilder: (context, error, stackTrace) => const Icon(Icons.shopping_bag_outlined, size: 44, color: Colors.blue),
+                          ),
+                        )
+                            : const Icon(Icons.shopping_bag_outlined, size: 44, color: Colors.blue),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black87), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    const SizedBox(height: 2),
+                    Text("${product.sizeVolume > 0 ? product.sizeVolume : ''} ${product.unitType}", style: const TextStyle(color: Colors.grey, fontSize: 11)),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('${product.currentPrice} ريال', style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 13)),
+                        GestureDetector(
+                          onTap: () async => await Get.find<CartController>().addProductToCart(product),
+                          child: const Icon(Icons.add_circle, color: Colors.blue, size: 22),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (product.hasDiscount)
+              Positioned(
+                top: 8,
+                left: 8,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                  decoration: BoxDecoration(color: Colors.redAccent, borderRadius: BorderRadius.circular(6)),
+                  child: const Text("خصم", style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

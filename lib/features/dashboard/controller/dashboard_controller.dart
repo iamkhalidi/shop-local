@@ -9,6 +9,7 @@ class DashboardController extends GetxController {
   var currentCategoryPage = 0.obs;
 
   var selectedCategoryName = ''.obs;
+  var selectedCategoryDisplay = ''.obs; // 🌟 متغير جديد لحفظ الاسم العربي للعرض في الـ AppBar
   var selectedProductName = ''.obs;
   var selectedProductPrice = ''.obs;
 
@@ -24,12 +25,13 @@ class DashboardController extends GetxController {
   }
 
   // للانتقال إلى صفحة المنتجات داخل قسم الفئات
-  void goToProducts(String categoryName) {
-    selectedCategoryName.value = categoryName;
+  void goToProducts(String categoryId, String categoryName) {
+    selectedCategoryName.value = categoryId;
+    selectedCategoryDisplay.value = categoryName; // حفظ الاسم العربي
     currentCategoryPage.value = 1;
 
-    // 🚀 جلب المنتجات هنا لمرة واحدة فقط عند الضغط على الفئة
-    Get.find<ProductsController>().fetchProducts(categoryName);
+    // 🚀 جلب المنتجات باستخدام الـ ID الحقيقي
+    Get.find<ProductsController>().fetchProducts(categoryId);
   }
 
   // للانتقال إلى صفحة تفاصيل المنتج داخل قسم الفئات
