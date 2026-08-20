@@ -41,29 +41,62 @@ class AuthController extends GetxController {
   }
 
 
-  // --- 1. تسجيل الدخول ---
-  void login() async { // قمنا بإزالة الباراميترز لأنها أصبحت متوفرة محلياً في الكنترولر
+  // --- 1. تسجيل الدخول الذكي (بريد أو رقم جوال بصيغ متعددة) ---
+  void login() async {
     try {
-      final email = emailController.text.trim();
+      final input = emailController.text.trim();
       final password = passwordController.text.trim();
 
-      if (email.isEmpty || password.isEmpty) {
+      if (input.isEmpty || password.isEmpty) {
         AppSnack.warning('الرجاء تعبئة جميع الحقول');
         return;
       }
 
       isLoading.value = true;
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      String emailToSignIn = '';
+
+      // 🔍 1. التحقق هل المدخل بريد إلكتروني؟
+      if (input.contains('@')) {
+        emailToSignIn = input;
+      } else {
+        // 📱 2. إذا كان رقم هاتف، نعالجه بذكاء
+        // تنظيف الرقم من الصفر الدولي أو العلامات للبحث المرن
+        String cleanNumber = input.replaceAll('+', '').replaceAll(' ', '');
+        if (cleanNumber.startsWith('00')) cleanNumber = cleanNumber.substring(2);
+        if (cleanNumber.startsWith('0')) cleanNumber = cleanNumber.substring(1);
+
+        // البحث في Firestore عن مستخدم يملك رقماً ينتهي بنفس المدخلات
+        // ملاحظة: نستخدم الاستعلام عن الحقل 'phone'
+        final snapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .get(); // لجلب الفلترة البرمجية لضمان الدقة في الصيغ المختلفة
+
+        final userDoc = snapshot.docs.firstWhereOrNull((doc) {
+          String storedPhone = (doc.data()['phone'] ?? '').toString().replaceAll('+', '');
+          return storedPhone.endsWith(cleanNumber);
+        });
+
+        if (userDoc != null) {
+          emailToSignIn = userDoc.data()['email'];
+        } else {
+          AppSnack.error('عذراً، رقم الجوال هذا غير مسجل لدينا');
+          isLoading.value = false;
+          return;
+        }
+      }
+
+      // 🔐 3. محاولة تسجيل الدخول الفعلية
+      await _auth.signInWithEmailAndPassword(email: emailToSignIn, password: password);
 
       await Future.delayed(const Duration(seconds: 1));
-
-      // 🌟 خطوة ذكية: تنظيف الحقول بعد نجاح تسجيل الدخول لكي لا تظل مكتوبة إذا سجل خروج مستقبلاً
       emailController.clear();
       passwordController.clear();
-
       checkUserStatus();
     } on FirebaseAuthException catch (e) {
-      _showErrorSnackBar(_getArabicErrorMessage(e.code));
+      // إظهار سبب الخطأ بدقة (كلمة سر خطأ، بريد غير موجود، إلخ)
+      AppSnack.error(_getArabicErrorMessage(e.code));
+    } catch (e) {
+      AppSnack.error('حدث خطأ غير متوقع، يرجى المحاولة لاحقاً');
     } finally {
       isLoading.value = false;
     }

@@ -58,7 +58,8 @@ https://shop-local-4d81d.firebaseapp.com/
     
     * search feature in categories screen
     * search feature in products scree
-
+    * write shop name from firebase 
+    * write in login screen this number will be ur number contect
     
 
 
@@ -70,12 +71,10 @@ https://shop-local-4d81d.firebaseapp.com/
 
 
 
-    write shop name from firebase 
-    write in login screen this number will be ur number contect
 
 
 
-    make pass more harder
+
 
      *    *    *    *    *    *    *
 >> ui

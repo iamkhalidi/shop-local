@@ -82,20 +82,23 @@ class RegisterScreen extends GetView<AuthController> {
                 ),
                 const SizedBox(height: 15),
 
-                // 🌟 رسالة تنبيه بخصوص رقم الهاتف
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
-                  child: Row(
-                    children: [
-                      Icon(Icons.info_outline, size: 14, color: Colors.orange),
-                      SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          'هذا الرقم سيعتمد للتواصل معك، يرجى التأكد من صحته.',
-                          style: TextStyle(fontSize: 12, color: Colors.orange, fontWeight: FontWeight.bold),
+                // 🌟 رسالة تنبيه بخصوص رقم الهاتف (مدعومة بـ RTL يدوياً)
+                const Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
+                    child: Row(
+                      children: [
+                        Icon(Icons.info_outline, size: 14, color: Colors.orange),
+                        SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            'هذا الرقم سيعتمد للتواصل معك، يرجى التأكد من صحته.',
+                            style: TextStyle(fontSize: 12, color: Colors.orange, fontWeight: FontWeight.bold),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
 

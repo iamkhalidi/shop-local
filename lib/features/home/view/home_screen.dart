@@ -8,6 +8,7 @@ import '../../dashboard/controller/dashboard_controller.dart';
 import '../../categories/controller/products_controller.dart';
 import '../controller/home_controller.dart';
 import '../../../services/store_service.dart';
+import '../../favorites/controller/favorites_controller.dart'; // 👈 استيراد كنترولر المفضلة
 
 class HomeScreen extends GetView<HomeController> {
   const HomeScreen({Key? key}) : super(key: key);
@@ -16,6 +17,7 @@ class HomeScreen extends GetView<HomeController> {
   Widget build(BuildContext context) {
     final dashboardController = Get.find<DashboardController>();
     final productsController = Get.find<ProductsController>();
+    final favoritesController = Get.find<FavoritesController>(); // 👈 جلب نسخة كنترولر المفضلة
     final storeService = StoreService.instance;
 
     return Scaffold(
@@ -88,12 +90,45 @@ class HomeScreen extends GetView<HomeController> {
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.favorite_border, color: Colors.redAccent, size: 26),
-            onPressed: () {
-              Get.toNamed(Routes.FAVORITES);
-            },
-          ),
+          // 🌟 شارة المفضلة الاحترافية مع عداد مباشر
+          Obx(() {
+            final count = favoritesController.favoriteProducts.length;
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.favorite_border, color: Colors.redAccent, size: 26),
+                  onPressed: () => Get.toNamed(Routes.FAVORITES),
+                ),
+                if (count > 0)
+                  Positioned(
+                    top: 5,
+                    right: 5,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade700,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 1.5), // إطار أبيض ناعم للفصل
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 17,
+                        minHeight: 17,
+                      ),
+                      child: Text(
+                        '$count',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          }),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: TextButton.icon(

@@ -61,6 +61,23 @@ class ForgotPasswordScreen extends GetView<AuthController> {
               },
               child: const Text('إرسال رابط إعادة التعيين', style: TextStyle(fontSize: 16)),
             )),
+
+            const SizedBox(height: 20),
+            
+            // 🌟 رسالة توضيحية بخصوص البريد غير المرغوب فيه
+            const Directionality(
+              textDirection: TextDirection.rtl,
+              child: Text(
+                '>> تنبيه: في حال لم تصلك الرسالة في "البريد الوارد"، يرجى التحقق من مجلد "البريد غير المرغوب فيه" (Spam) <<',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12, 
+                  color: Colors.orange, 
+                  fontWeight: FontWeight.bold,
+                  height: 1.5,
+                ),
+              ),
+            ),
           ],
         ),
       ),

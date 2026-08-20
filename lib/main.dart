@@ -9,8 +9,13 @@ import 'routes/app_pages.dart';
 import 'features/auth/binding/auth_binding.dart';
 import 'package:web/web.dart' as web;
 import 'package:flutter_web_plugins/url_strategy.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'packa'
+    'ge:flutter_native_splash/flutter_native_splash.dart';
 import 'package:shop_local/services/store_service.dart';
+import 'package:shop_local/services/snackbar_service.dart';
+
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'core/widgets/custom_snackbar_host.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -44,6 +49,7 @@ void main() async {
   // حقن خدمات النظام الأساسية
   await Get.putAsync(() async => ConnectivityService());
   await Get.putAsync(() async => StoreService());
+  Get.put(SnackbarService(), permanent: true); // 🌟 حقن خدمة السناك بار لتكون متاحة عالمياً
 
   runApp(const MyApp());
 }
@@ -74,6 +80,8 @@ class MyApp extends StatelessWidget {
             children: [
               if (child != null) child,
               if (isOffline) const NoInternetOverlay(),
+              // 🌟 إضافة مستضيف السناك بار الزجاجي ليظهر فوق كل الشاشات
+              const CustomSnackbarHost(),
             ],
           );
         });
