@@ -6,6 +6,7 @@ import '../../../data/repositories/orders_repository.dart';
 import '../../cart/controller/cart_controller.dart';
 import '../model/order_model.dart';
 import '../widgets/order_success_dialog.dart';
+import '../../../core/utils/app_snack.dart';
 
 class OrdersController extends GetxController {
   final OrdersRepository _ordersRepository = OrdersRepository();
@@ -36,7 +37,7 @@ class OrdersController extends GetxController {
   // 🚀 دالة الشراء المحسنة: تفتح السؤال أولاً قبل أي عملية حفظ
   Future<void> placeOrder({double deliveryFee = 0.0}) async {
     if (_cartController.cartItems.isEmpty) {
-      Get.snackbar("تنبيه", "سلتك فارغة حالياً! لا يمكن إتمام الطلب.");
+      AppSnack.warning("سلتك فارغة حالياً! لا يمكن إتمام الطلب.");
       return;
     }
 
@@ -52,7 +53,7 @@ class OrdersController extends GetxController {
           await _executeCartClearing();
         },
         onCancel: () {
-          Get.snackbar("نجاح العملية", "تم حفظ طلبك، تسوق ممتع!");
+          AppSnack.success("تم حفظ طلبك، تسوق ممتع!", title: "نجاح العملية");
         },
       ),
       barrierDismissible: false,
@@ -88,7 +89,7 @@ class OrdersController extends GetxController {
 
       return true; // نجحت العملية
     } catch (e) {
-      Get.snackbar("فشل الطلب", "حدث خطأ أثناء اعتماد الطلب، يرجى المحاولة لاحقاً.");
+      AppSnack.error("حدث خطأ أثناء اعتماد الطلب، يرجى المحاولة لاحقاً.", title: "فشل الطلب");
       return false; // فشلت العملية
     } finally {
       isLoading.value = false;
@@ -105,7 +106,7 @@ class OrdersController extends GetxController {
       // await NotificationHelper.triggerOrderSuccessNotification();
       // Get.snackbar("نجاح", "تم اعتماد طلبك وتفريغ السلة بنجاح.");
     } catch (e) {
-      Get.snackbar("تنبيه", "تم حفظ الطلب ولكن فشل تفريغ السلة سحابياً.");
+      AppSnack.warning("تم حفظ الطلب ولكن فشل تفريغ السلة سحابياً.");
     } finally {
       isLoading.value = false;
     }
@@ -126,7 +127,7 @@ class OrdersController extends GetxController {
 
       return true;
     } catch (e) {
-      Get.snackbar("خطأ", "فشل في حذف الطلب، يرجى المحاولة لاحقاً.");
+      AppSnack.error("فشل في حذف الطلب، يرجى المحاولة لاحقاً.");
       return false;
     } finally {
       isLoading.value = false;

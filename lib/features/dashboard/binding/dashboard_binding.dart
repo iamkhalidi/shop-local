@@ -5,12 +5,16 @@ import '../../favorites/controller/favorites_controller.dart';
 import '../../orders/controller/orders_controller.dart';
 import '../controller/dashboard_controller.dart';
 import '../../home/controller/home_controller.dart';
+import '../../../services/snackbar_service.dart';
 // 👇 استيراد الكنترولر الجديد للمنتجات
 import '../../categories/controller/products_controller.dart';
 
 class DashboardBinding extends Bindings {
   @override
   void dependencies() {
+    // حقن خدمة السناك بار المخصصة
+    Get.put(SnackbarService(), permanent: true);
+
     // حقن كنترولر اللوحة الرئيسية
     Get.lazyPut<DashboardController>(() => DashboardController());
 

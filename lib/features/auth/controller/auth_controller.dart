@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shop_local/routes/app_pages.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../core/utils/app_snack.dart';
 
 class AuthController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -47,12 +48,7 @@ class AuthController extends GetxController {
       final password = passwordController.text.trim();
 
       if (email.isEmpty || password.isEmpty) {
-        Get.snackbar(
-          'تنبيه',
-          'الرجاء تعبئة جميع الحقول',
-          backgroundColor: Colors.orange,
-          colorText: Colors.white,
-        );
+        AppSnack.warning('الرجاء تعبئة جميع الحقول');
         return;
       }
 
@@ -123,8 +119,7 @@ class AuthController extends GetxController {
         });
       }
 
-      Get.snackbar('تم بنجاح', 'تم إنشاء الحساب بنجاح، مرحباً بك يا $name',
-          backgroundColor: Colors.green, colorText: Colors.white);
+      AppSnack.success('تم إنشاء الحساب بنجاح، مرحباً بك يا $name');
 
       checkUserStatus();
     } on FirebaseAuthException catch (e) {
@@ -140,12 +135,9 @@ class AuthController extends GetxController {
     try {
       isLoading.value = true;
       await _auth.sendPasswordResetEmail(email: email);
-      Get.snackbar(
-        'رابط الاستعادة',
-        'تم إرسال رابط إعادة تعيين كلمة السر إلى بريدك الإلكتروني',
-        backgroundColor: Colors.blue,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 5),
+      AppSnack.show(
+        title: 'رابط الاستعادة',
+        message: 'تم إرسال رابط إعادة تعيين كلمة السر إلى بريدك الإلكتروني',
       );
     } on FirebaseAuthException catch (e) {
       _showErrorSnackBar(_getArabicErrorMessage(e.code));
@@ -172,12 +164,6 @@ class AuthController extends GetxController {
   }
 
   void _showErrorSnackBar(String message) {
-    Get.snackbar(
-      'خطأ', message,
-      backgroundColor: Colors.redAccent,
-      colorText: Colors.white,
-      snackPosition: SnackPosition.BOTTOM,
-      margin: const EdgeInsets.all(15),
-    );
+    AppSnack.error(message);
   }
 }

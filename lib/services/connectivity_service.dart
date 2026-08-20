@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:universal_html/html.dart' as html;
 import 'dart:async';
+import '../core/utils/app_snack.dart';
+import 'snackbar_service.dart';
 
 enum ConnectivityStatus { online, offline, weak }
 
@@ -109,17 +111,7 @@ class ConnectivityService extends GetxService {
 
   // 🟢 سناك بار عودة الإنترنت (في الأسفل باللون الأخضر)
   void _showSuccessSnackbar(String message) {
-    Get.closeCurrentSnackbar(); // إغلاق أي سناك بار مفتوح فوراً
-    Get.snackbar(
-      'متصل الآن',
-      message,
-      snackPosition: SnackPosition.BOTTOM, // 👈 في الأسفل كما طلبت
-      backgroundColor: Colors.green.shade600,
-      colorText: Colors.white,
-      icon: const Icon(Icons.wifi, color: Colors.white),
-      margin: const EdgeInsets.all(15),
-      duration: const Duration(seconds: 3),
-    );
+    AppSnack.success(message, title: 'متصل الآن');
   }
 
   // 🟠 سناك بار الإنترنت الضعيف (في الأسفل باللون البرتقالي)
@@ -128,17 +120,14 @@ class ConnectivityService extends GetxService {
     if (_isWeakSnackBarVisible) return;
     _isWeakSnackBarVisible = true;
 
-    Get.closeCurrentSnackbar();
-    Get.snackbar(
-      'تنبيه الشبكة',
+    AppSnack.warning(
       'اتصال الإنترنت لديك ضعيف وغير مستقر حالياً.',
-      snackPosition: SnackPosition.BOTTOM, // 👈 في الأسفل باللون البرتقالي كما طلبت
-      backgroundColor: Colors.orange.shade800,
-      colorText: Colors.white,
-      icon: const Icon(Icons.signal_wifi_bad, color: Colors.white),
-      margin: const EdgeInsets.all(15),
-      duration: const Duration(seconds: 4),
-    ).future.then((_) => _isWeakSnackBarVisible = false);
+      title: 'تنبيه الشبكة',
+    );
+    
+    Future.delayed(const Duration(seconds: 4), () {
+      _isWeakSnackBarVisible = false;
+    });
   }
 
   @override

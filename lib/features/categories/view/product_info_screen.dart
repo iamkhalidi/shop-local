@@ -182,8 +182,8 @@ class ProductInfoScreen extends GetView<DashboardController> {
           onPressed:  product.stockQuantity <= 0
               ? null
               : () {
-            // استدعاء مباشر مريح للغاية
-            Get.find<CartController>().addProductToCart(product);
+            // إضافة المنتج ثم العودة التلقائية الذكية للخلف (سواء كان المسار Page أو IndexedStack)
+            Get.find<CartController>().addProductToCart(product).then((_) => (Get.currentRoute == Routes.PRODUCT_INFO) ? Get.back() : controller.goBackInCategories());
           },
         ),
             ],

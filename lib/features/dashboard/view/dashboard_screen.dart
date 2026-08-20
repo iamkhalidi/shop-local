@@ -14,6 +14,7 @@ import '../../home/view/home_screen.dart';
 import '../../categories/view/categories_screen.dart';
 import '../../cart/view/cart_screen.dart';
 import '../controller/dashboard_controller.dart';
+import '../../../core/widgets/custom_snackbar_host.dart';
 
 class DashboardScreen extends GetView<DashboardController> {
   const DashboardScreen({Key? key}) : super(key: key);
@@ -31,10 +32,16 @@ class DashboardScreen extends GetView<DashboardController> {
     return Scaffold(
       // الـ extendBody يسمح للمحتوى بالنزول خلف الشريط السفلي الزجاجي ليعطي تأثير الشفافية العميق
       extendBody: true,
-      body: Obx(() => IndexedStack(
-        index: controller.currentIndex.value,
-        children: pages,
-      )),
+      body: Stack(
+        children: [
+          Obx(() => IndexedStack(
+            index: controller.currentIndex.value,
+            children: pages,
+          )),
+          // 🌟 وضع مستضيف السناك بار هنا ليظهر فوق المحتوى وخلف الـ BottomNavigationBar
+          const CustomSnackbarHost(),
+        ],
+      ),
 
       // 🛠️ التعديل الأول: إضافة الـ SafeArea هنا لحماية الأزرار من التداخل مع نظام الجوال
       bottomNavigationBar: SafeArea(
