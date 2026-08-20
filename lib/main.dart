@@ -9,8 +9,7 @@ import 'routes/app_pages.dart';
 import 'features/auth/binding/auth_binding.dart';
 import 'package:web/web.dart' as web;
 import 'package:flutter_web_plugins/url_strategy.dart';
-import 'packa'
-    'ge:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:shop_local/services/store_service.dart';
 import 'package:shop_local/services/snackbar_service.dart';
 
@@ -68,9 +67,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         useMaterial3: true,
-        textTheme: GoogleFonts.cairoTextTheme(
-          ThemeData.light().textTheme,
-        ),
+        fontFamily: 'Cairo', // 🚀 الحل الأكثر استقراراً لضمان عمل الأيقونات والخط العربي معاً
       ),
       builder: (context, child) {
         final connectivityService = ConnectivityService.instance;
