@@ -23,6 +23,9 @@
   "hosting": {
     "site": "shop-khalid",
     "public": "build/web",
+    "predeploy": [
+      "flutter build web --release"
+    ],
     "ignore": [
       "firebase.json",
       "**/.*",

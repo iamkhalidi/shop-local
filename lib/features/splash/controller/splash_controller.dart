@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:shop_local/features/home/view/home_screen.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import '../../../data/database/firestore_seeder.dart';
 import '../../auth/controller/auth_controller.dart';
@@ -13,6 +15,13 @@ class SplashController extends GetxController with GetSingleTickerProviderStateM
   @override
   void onInit() {
     super.onInit();
+    
+    // إخفاء شاشة الترحيب الأصلية بسلاسة بعد رسم أول إطار للتطبيق (فقط على الموبايل)
+    if (!kIsWeb) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        FlutterNativeSplash.remove();
+      });
+    }
 
     // إعداد الـ AnimationController بمدة 1.5 ثانية للأنيميشن بالكامل
     animationController = AnimationController(
@@ -62,8 +71,8 @@ class SplashController extends GetxController with GetSingleTickerProviderStateM
 
 
   Future<void> navigateToHome() async {
-    // انتظر 3 ثوانٍ كاملة لعرض الشاشة والأنيميشن
-    await Future.delayed(const Duration(seconds: 3));
+    // تقليل الانتظار ليكون التطبيق أسرع (مثلاً ثانيتين بدلاً من 3)
+    await Future.delayed(const Duration(seconds: 2));
 
     // استدعاء دالة الفحص التي أضفناها بالأعلى في الـ AuthController
     Get.find<AuthController>().checkUserStatus();

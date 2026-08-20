@@ -9,9 +9,15 @@ import 'routes/app_pages.dart';
 import 'features/auth/binding/auth_binding.dart';
 import 'package:web/web.dart' as web;
 import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  
+  // إبقاء شاشة الترحيب ظاهرة فقط على الموبايل (أندرويد و iOS) لتجنب الخطأ في الويب
+  if (!kIsWeb) {
+    FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  }
 
   if (kIsWeb) {
     usePathUrlStrategy();
