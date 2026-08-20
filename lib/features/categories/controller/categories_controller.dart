@@ -10,10 +10,35 @@ class CategoriesController extends GetxController {
   var categories = <CategoryModel>[].obs;
   var isLoading = true.obs;
 
+  // 🌟 متغيرات البحث الجديدة
+  var isSearchMode = false.obs;
+  var searchQuery = ''.obs;
+
+  // قائمة الفئات المفلترة بناءً على البحث
+  List<CategoryModel> get displayedCategories {
+    if (searchQuery.isEmpty) {
+      return categories;
+    } else {
+      final query = searchQuery.value.toLowerCase();
+      return categories.where((cat) {
+        return cat.nameAr.toLowerCase().contains(query) || 
+               cat.nameEn.toLowerCase().contains(query);
+      }).toList();
+    }
+  }
+
   @override
   void onInit() {
     super.onInit();
     loadCategories(); // جلب الفئات عند تحميل الكنترولر تلقائياً
+  }
+
+  // دالة تفعيل/إلغاء وضع البحث
+  void toggleSearchMode() {
+    isSearchMode.value = !isSearchMode.value;
+    if (!isSearchMode.value) {
+      searchQuery.value = '';
+    }
   }
 
   // استدعاء البيانات من سيرفر الفايربيس

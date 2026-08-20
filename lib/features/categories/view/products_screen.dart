@@ -13,36 +13,63 @@ class ProductsScreen extends GetView<DashboardController> {
   Widget build(BuildContext context) {
     final ProductsController productsController = Get.find<ProductsController>();
 
-
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: Obx(() => Text(
-          controller.selectedCategoryDisplay.value, // 🌟 استخدام اسم الفئة العربي الجديد
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        )),
-        centerTitle: true,
-        elevation: 0,
         backgroundColor: Colors.white,
+        elevation: 0,
         foregroundColor: Colors.black,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new),
+        centerTitle: true,
+        title: Obx(() {
+          if (productsController.isSearchMode.value) {
+            return Container(
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: TextField(
+                autofocus: true,
+                onChanged: (val) => productsController.searchQuery.value = val,
+                decoration: const InputDecoration(
+                  hintText: 'ابحث عن اسم المنتج، الوصف...',
+                  hintStyle: TextStyle(fontSize: 13, color: Colors.grey),
+                  prefixIcon: Icon(Icons.search, size: 20, color: Colors.blue),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(vertical: 10),
+                ),
+              ),
+            );
+          }
+          return Text(
+            controller.selectedCategoryDisplay.value,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          );
+        }),
+        leading: Obx(() => IconButton(
+          icon: Icon(productsController.isSearchMode.value ? Icons.close : Icons.arrow_back_ios_new),
           onPressed: () {
-            // // الرجوع لصفحة الفئات السابقة عبر الكنترولر الخاص بك
-            // controller.goBackInCategories();
-
-            if (controller.isComingFromHome.value) {
-              // إذا كان قادماً من الهوم، يرجعه لتبويب الرئيسية ويصفر الشارة
-              controller.isComingFromHome.value = false;
-              controller.changePage(0);
+            if (productsController.isSearchMode.value) {
+              productsController.toggleSearchMode();
             } else {
-              // إذا كان يتصفح بشكل طبيعي من داخل تبويب الفئات، يرجعه لقائمة الفئات العامة
-              controller.goBackInCategories();
+              if (controller.isComingFromHome.value) {
+                controller.isComingFromHome.value = false;
+                controller.changePage(0);
+              } else {
+                controller.goBackInCategories();
+              }
             }
-
-
-            },
-        ),
+          },
+        )),
+        actions: [
+          Obx(() => !productsController.isSearchMode.value 
+            ? IconButton(
+                icon: const Icon(Icons.search, color: Colors.blue),
+                onPressed: () => productsController.toggleSearchMode(),
+              )
+            : const SizedBox.shrink()
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0, bottom: 90.0),
@@ -52,17 +79,29 @@ class ProductsScreen extends GetView<DashboardController> {
             return const Center(child: CircularProgressIndicator());
           }
 
+          final items = productsController.displayedProducts;
+
           // 2. حالة عدم وجود منتجات في الفئة
-          if (productsController.productsList.isEmpty) {
-            return const Center(
-              child: Text(
-                "لا توجد منتجات متوفرة في هذه الفئة حالياً.",
-                style: TextStyle(color: Colors.grey, fontSize: 16),
+          if (items.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.search_off, size: 60, color: Colors.grey[400]),
+                  const SizedBox(height: 16),
+                  Text(
+                    productsController.searchQuery.isEmpty
+                        ? "لا توجد منتجات متوفرة في هذه الفئة حالياً."
+                        : "لم يتم العثور على نتائج للبحث عن '${productsController.searchQuery.value}'",
+                    style: const TextStyle(color: Colors.grey, fontSize: 15),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             );
           }
 
-          // 3. عرض المنتجات الحقيقية مع دعم التمرير اللانهائي
+          // 3. عرض المنتجات الحقيقية مع دعم التمرير اللانهائي والبحث
           return CustomScrollView(
             controller: productsController.scrollController,
             slivers: [
@@ -75,14 +114,14 @@ class ProductsScreen extends GetView<DashboardController> {
                 ),
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    final product = productsController.productsList[index];
+                    final product = items[index];
                     return _buildProductCard(context, product, productsController);
                   },
-                  childCount: productsController.productsList.length,
+                  childCount: items.length,
                 ),
               ),
-              // 🚀 عرض مؤشر تحميل عند جلب المزيد من المنتجات في الأسفل
-              if (productsController.isFetchingMore.value)
+              // 🚀 عرض مؤشر تحميل عند جلب المزيد (يختفي في وضع البحث لضمان الدقة)
+              if (productsController.isFetchingMore.value && !productsController.isSearchMode.value)
                 const SliverToBoxAdapter(
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 20),

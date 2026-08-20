@@ -22,19 +22,73 @@ class CategoriesScreen extends GetView<DashboardController> {
 
       // الافتراضي (0): عرض قائمة الفئات الأساسية من الفايربيس
       return Scaffold(
-        appBar: AppBar(title: const Text('الفئات'), centerTitle: true),
+        appBar: AppBar(
+          title: Obx(() {
+            if (categoriesController.isSearchMode.value) {
+              return Container(
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: TextField(
+                  autofocus: true,
+                  onChanged: (val) => categoriesController.searchQuery.value = val,
+                  decoration: const InputDecoration(
+                    hintText: 'ابحث عن فئة...',
+                    hintStyle: TextStyle(fontSize: 13, color: Colors.grey),
+                    prefixIcon: Icon(Icons.search, size: 20, color: Colors.blue),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(vertical: 10),
+                  ),
+                ),
+              );
+            }
+            return const Text('الفئات', style: TextStyle(fontWeight: FontWeight.bold));
+          }),
+          centerTitle: true,
+          leading: Obx(() => categoriesController.isSearchMode.value
+              ? IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => categoriesController.toggleSearchMode(),
+                )
+              : const SizedBox.shrink()),
+          actions: [
+            Obx(() => !categoriesController.isSearchMode.value
+                ? IconButton(
+                    icon: const Icon(Icons.search, color: Colors.blue),
+                    onPressed: () => categoriesController.toggleSearchMode(),
+                  )
+                : const SizedBox.shrink()),
+          ],
+        ),
         body: Obx(() {
           // 1. عرض مؤشر انتظار في حال كانت البيانات قيد التحميل من السيرفر
           if (categoriesController.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          // 2. في حال فرغت قاعدة البيانات أو لا يوجد اتصال
-          if (categoriesController.categories.isEmpty) {
-            return const Center(
-              child: Text(
-                'لا توجد فئات متاحة حالياً، تحقق من السيرفر',
-                style: TextStyle(fontSize: 16),
+          final items = categoriesController.displayedCategories;
+
+          // 2. في حال فرغت قاعدة البيانات أو لا يوجد نتائج للبحث
+          if (items.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    categoriesController.searchQuery.isEmpty ? Icons.category_outlined : Icons.search_off,
+                    size: 60,
+                    color: Colors.grey[400],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    categoriesController.searchQuery.isEmpty
+                        ? 'لا توجد فئات متاحة حالياً'
+                        : "لم يتم العثور على نتائج لـ '${categoriesController.searchQuery.value}'",
+                    style: const TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                ],
               ),
             );
           }
@@ -49,9 +103,9 @@ class CategoriesScreen extends GetView<DashboardController> {
                 mainAxisSpacing: 16,
                 childAspectRatio: 1.1,
               ),
-              itemCount: categoriesController.categories.length,
+              itemCount: items.length,
               itemBuilder: (context, index) {
-                final category = categoriesController.categories[index];
+                final category = items[index];
 
                 // تحويل كود الـ Hex النصي القادم من فايربيس (مثل FFFCEBE2) إلى لون حقيقي داخل فلاتر
                 final int colorHex = int.parse(category.color, radix: 16);
