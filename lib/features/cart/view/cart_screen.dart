@@ -83,7 +83,23 @@ class CartScreen extends StatelessWidget {
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => controller.removeItem(item.id),
+                            onPressed: () {
+                              Get.defaultDialog(
+                                title: 'تأكيد الحذف',
+                                titleStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                                middleText: 'هل أنت متأكد من أنك تريد حذف (${item.productName}) من السلة؟',
+                                middleTextStyle: const TextStyle(fontSize: 14),
+                                textConfirm: 'نعم، حذف',
+                                textCancel: 'تراجع',
+                                confirmTextColor: Colors.white,
+                                buttonColor: Colors.redAccent,
+                                cancelTextColor: Colors.black54,
+                                onConfirm: () {
+                                  controller.removeItem(item.id);
+                                  Get.back(); // إغلاق الديالوج بعد الحذف
+                                },
+                              );
+                            },
                           ),
                         ],
                       ),

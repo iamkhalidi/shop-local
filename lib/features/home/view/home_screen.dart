@@ -225,16 +225,16 @@ class HomeScreen extends GetView<HomeController> {
                 ),
               ),
             ),
-            if (product.hasDiscount)
-              Positioned(
-                top: 8,
-                left: 8,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                  decoration: BoxDecoration(color: Colors.redAccent, borderRadius: BorderRadius.circular(6)),
-                  child: const Text("خصم", style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
-                ),
-              ),
+            // if (product.hasDiscount)
+            //   Positioned(
+            //     top: 8,
+            //     left: 8,
+            //     child: Container(
+            //       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+            //       decoration: BoxDecoration(color: Colors.redAccent, borderRadius: BorderRadius.circular(6)),
+            //       child: const Text("خصم", style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
+            //     ),
+            //   ),
           ],
         ),
       ),

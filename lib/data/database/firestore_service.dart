@@ -19,26 +19,40 @@ class FirestoreService {
   }
 
 
-  // جلب قائمة المنتجات التابعة لفئة معينة عبر الـ Subcollection (مع خيار التحديد لتقليل الذاكرة)
-  Future<List<ProductModel>> getProductsByCategory(String categoryId, {int? limit}) async {
+  // جلب قائمة المنتجات التابعة لفئة معينة مع دعم التجزئة (Pagination)
+  Future<({List<ProductModel> products, DocumentSnapshot? lastDoc})> getProductsByCategory(
+    String categoryId, {
+    int? limit,
+    DocumentSnapshot? lastDocument,
+  }) async {
     try {
       Query query = _db
           .collection('categories')
           .doc(categoryId)
           .collection('products');
       
+      // إذا كان هناك مستند سابق، نبدأ الجلب من بعده
+      if (lastDocument != null) {
+        query = query.startAfterDocument(lastDocument);
+      }
+
       if (limit != null) {
         query = query.limit(limit);
       }
 
       QuerySnapshot snapshot = await query.get();
 
-      return snapshot.docs
+      List<ProductModel> products = snapshot.docs
           .map((doc) => ProductModel.fromJson(doc.data() as Map<String, dynamic>))
           .toList();
+
+      return (
+        products: products,
+        lastDoc: snapshot.docs.isNotEmpty ? snapshot.docs.last : null,
+      );
     } catch (e) {
       print("❌ خطأ أثناء جلب المنتجات من الفايرستور: $e");
-      return [];
+      return (products: <ProductModel>[], lastDoc: null);
     }
   }
 

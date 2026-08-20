@@ -166,26 +166,44 @@ class ProductInfoScreen extends GetView<DashboardController> {
                 ],
               ),
               const SizedBox(height: 30),
-        //  الكود المحدث والمطور لزر إضافة السلة:
-        ElevatedButton.icon(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: product.stockQuantity <= 0 ? Colors.grey : Colors.blue,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 15),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-          icon: const Icon(Icons.add_shopping_cart, color: Colors.white),
-          label: Text(
-            product.stockQuantity <= 0 ? 'نفدت الكمية' : 'إضافة إلى السلة',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          onPressed:  product.stockQuantity <= 0
-              ? null
-              : () {
-            // إضافة المنتج ثم العودة التلقائية الذكية للخلف (سواء كان المسار Page أو IndexedStack)
-            Get.find<CartController>().addProductToCart(product).then((_) => (Get.currentRoute == Routes.PRODUCT_INFO) ? Get.back() : controller.goBackInCategories());
-          },
-        ),
+        //  الكود المحدث والمطور لزر إضافة السلة مع مؤشر تحميل:
+        Obx(() {
+          final cartController = Get.find<CartController>();
+          final bool isAdding = cartController.isLoadingAdd.value;
+
+          return ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: (product.stockQuantity <= 0 || isAdding) ? Colors.grey : Colors.blue,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            icon: isAdding
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                  )
+                : const Icon(Icons.add_shopping_cart, color: Colors.white),
+            label: Text(
+              isAdding 
+                  ? 'جاري الإضافة...' 
+                  : (product.stockQuantity <= 0 ? 'نفدت الكمية' : 'إضافة إلى السلة'),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            onPressed: (product.stockQuantity <= 0 || isAdding)
+                ? null
+                : () {
+                    cartController.addProductToCart(product).then((_) {
+                      if (Get.currentRoute == Routes.PRODUCT_INFO) {
+                        Get.back();
+                      } else {
+                        controller.goBackInCategories();
+                      }
+                    });
+                  },
+          );
+        }),
             ],
           ),
         ),

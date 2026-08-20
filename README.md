@@ -45,7 +45,19 @@ https://shop-local-4d81d.firebaseapp.com/
     *cart to sub collection
     *long loading on home screen categories 
     *//on click show all on home screen it opens vegetables items only (or remove this button)
+    
+    *admin panel:
+    1: see order [with userinfo]
+    2: change order status
+    3: usersData[CRUD]
+    4: categories>prod [add/delete/update]
 
+    * when confirm with audio
+    * add product to cart "add loading"
+    * Notifications sound when confirm an order & delete order
+
+
+    
 
 
 
@@ -55,20 +67,9 @@ https://shop-local-4d81d.firebaseapp.com/
 > Not Completed Yet 'Features'
 
 
-    Notifications sound when confirm an order & delete order
 
-    admin panel:
-    1: see order [with userinfo]
-    2: change order status
-    3: usersData[CRUD]
-    4: categories>prod [add/delete/update]
 
-    add product to cart "add loading"
-
-    dialog 'are you sure you want to delete this item from the cart'
-    quantity circle of my orders button
-    shaking when adding item to cart + when confirm with audio
-
+    write in login screen this number will be ur number contect
 
 
 

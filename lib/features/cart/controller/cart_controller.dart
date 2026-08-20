@@ -12,6 +12,9 @@ class CartController extends GetxController {
 
   final CartRepository _cartRepository = CartRepository();
   final RxList<CartItemModel> cartItems = <CartItemModel>[].obs;
+  
+  // 🌟 متغير جديد لمراقبة حالة التحميل أثناء إضافة منتج
+  var isLoadingAdd = false.obs;
 
   // 🌟 الحل الذكي: جلب المعرف الحقيقي للمستخدم النشط حالياً بدلاً من النص الثابت
   String get userId {
@@ -35,12 +38,15 @@ class CartController extends GetxController {
     }
 
     try {
+      isLoadingAdd.value = true; // بدء التحميل
       CartItemModel cartItem = CartItemModel.fromProduct(product, quantity: 1);
       await _cartRepository.addToCart(userId, cartItem);
 
       AppSnack.success("تم إضافة (${product.name}) بنجاح إلى السلة");
     } catch (e) {
       AppSnack.error('فشل إضافة المنتج: $e');
+    } finally {
+      isLoadingAdd.value = false; // إنهاء التحميل
     }
   }
 

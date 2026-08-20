@@ -74,13 +74,13 @@ class HomeController extends GetxController {
   Future<void> fetchProductsForCategory(String categoryId) async {
     try {
       // 🚀 إزالة .toLowerCase() لأن الـ IDs في فايرستور حساسة لحالة الأحرف
-      var fetchedProducts = await _firestoreService.getProductsByCategory(
+      var result = await _firestoreService.getProductsByCategory(
         categoryId, 
         limit: 6,
       );
 
       // تحديث الخريطة بالمنتجات الجديدة
-      categoryProductsMap[categoryId] = fetchedProducts;
+      categoryProductsMap[categoryId] = result.products;
     } catch (e) {
       print("Error loading products for category ($categoryId): $e");
     }

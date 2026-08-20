@@ -62,153 +62,155 @@ class ProductsScreen extends GetView<DashboardController> {
             );
           }
 
-          // 3. عرض المنتجات الحقيقية
-          return GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 15,
-              mainAxisSpacing: 15,
-              childAspectRatio: 0.72, // ضبط النسبة لتناسب التصميم الحقيقي مع الحقول الجديدة
-            ),
-            itemCount: productsController.productsList.length,
-            itemBuilder: (context, index) {
-              final product = productsController.productsList[index];
-
-              return GestureDetector(
-                onTap: () {
-                  // حفظ المنتج الذي تم الضغط عليه داخل الـ ProductsController
-                  productsController.selectedProduct.value = product;
-
-                  // الانتقال لصفحة تفاصيل المنتج باستخدام دالتك الأصلية في الـ Dashboard
-                  controller.goToProductInfo(product.name, "${product.currentPrice} ريال");
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(color: Colors.grey.withOpacity(0.15)),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.grey.withOpacity(0.1),
-                          blurRadius: 5,
-                          spreadRadius: 2
-                      )
-                    ],
-                  ),
-                  child: Stack(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-
-                            // 🌟 عرض صورة المنتج الحقيقية بدل الأيقونة المؤقتة 🌟
-                            Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[50],
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: product.imageUrl.isNotEmpty
-                                      ? Image.network(
-                                    product.imageUrl,
-                                    fit: BoxFit.cover,
-                                    cacheWidth: 400, // 🚀 تقييد استهلاك الذاكرة في الشبكة
-                                    loadingBuilder: (context, child, loadingProgress) {
-                                      if (loadingProgress == null) return child;
-                                      return const Center(
-                                        child: SizedBox(
-                                          width: 24,
-                                          height: 24,
-                                          child: CircularProgressIndicator(strokeWidth: 2),
-                                        ),
-                                      );
-                                    },
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return const Icon(Icons.shopping_bag_outlined, size: 50, color: Colors.blue);
-                                    },
-                                  )
-                                      : const Icon(Icons.shopping_bag_outlined, size: 50, color: Colors.blue),
-                                ),
-                              ),
-                            ),
-
-                            const SizedBox(height: 10),
-
-                            // اسم المنتج الحقيقي القادم من الفايربيس
-                            Text(
-                              product.name,
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                              textAlign: TextAlign.start,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 2),
-
-                            // حجم أو وزن المنتج (مثال: 1.4 liter)
-                            Text(
-                              "${product.sizeVolume > 0 ? product.sizeVolume : ''} ${product.unitType}",
-                              style: const TextStyle(color: Colors.grey, fontSize: 12),
-                              textAlign: TextAlign.start,
-                            ),
-                            const SizedBox(height: 5),
-
-                            // داخل GridView.builder -> itemBuilder في ملف products_screen.dart:
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                    '${product.currentPrice} ريال',
-                                    style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 14)
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    // استدعاء مباشر ونظيف بسطر واحد لتمرير كائن المنتج بالكامل
-                                    Get.find<CartController>().addProductToCart(product);
-                                  },
-                                  child: Icon(Icons.add_circle, color: Colors.blue.withOpacity(0.8), size: 24),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // شارة "خصم" تظهر فقط إذا كان المنتج يملك خصماً فعلياً في قاعدة البيانات
-                      if (product.hasDiscount)
-                        Positioned(
-                          top: 8,
-                          left: 8,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.redAccent,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Text(
-                              "خصم",
-                              style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-
-                      // 🌟 تم إضافة زر المفضلة هنا في أعلى اليمين داخل كارت المنتج
-                      Positioned(
-                        top: 8,
-                        right: 8,
-                        child: FavoriteButton(product: product, size: 22),
-                      ),
-                    ],
+          // 3. عرض المنتجات الحقيقية مع دعم التمرير اللانهائي
+          return CustomScrollView(
+            controller: productsController.scrollController,
+            slivers: [
+              SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 15,
+                  mainAxisSpacing: 15,
+                  childAspectRatio: 0.72,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final product = productsController.productsList[index];
+                    return _buildProductCard(context, product, productsController);
+                  },
+                  childCount: productsController.productsList.length,
+                ),
+              ),
+              // 🚀 عرض مؤشر تحميل عند جلب المزيد من المنتجات في الأسفل
+              if (productsController.isFetchingMore.value)
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Center(child: CircularProgressIndicator()),
                   ),
                 ),
-              );
-            },
+            ],
           );
         }),
+      ),
+    );
+  }
+
+  // دالة مساعدة لبناء كارت المنتج للحفاظ على نظافة الكود
+  Widget _buildProductCard(BuildContext context, dynamic product, dynamic productsController) {
+    return GestureDetector(
+      onTap: () {
+        productsController.selectedProduct.value = product;
+        controller.goToProductInfo(product.name, "${product.currentPrice} ريال");
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.grey.withOpacity(0.15)),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                blurRadius: 5,
+                spreadRadius: 2
+            )
+          ],
+        ),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: product.imageUrl.isNotEmpty
+                            ? Image.network(
+                          product.imageUrl,
+                          fit: BoxFit.cover,
+                          cacheWidth: 400,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return const Center(
+                              child: SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(Icons.shopping_bag_outlined, size: 50, color: Colors.blue);
+                          },
+                        )
+                            : const Icon(Icons.shopping_bag_outlined, size: 50, color: Colors.blue),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    product.name,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    textAlign: TextAlign.start,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    "${product.sizeVolume > 0 ? product.sizeVolume : ''} ${product.unitType}",
+                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                    textAlign: TextAlign.start,
+                  ),
+                  const SizedBox(height: 5),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                          '${product.currentPrice} ريال',
+                          style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 14)
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Get.find<CartController>().addProductToCart(product);
+                        },
+                        child: Icon(Icons.add_circle, color: Colors.blue.withOpacity(0.8), size: 24),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            if (product.hasDiscount)
+              Positioned(
+                top: 8,
+                left: 8,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.redAccent,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text(
+                    "خصم",
+                    style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: FavoriteButton(product: product, size: 22),
+            ),
+          ],
+        ),
       ),
     );
   }
