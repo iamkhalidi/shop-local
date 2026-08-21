@@ -25,16 +25,16 @@ class StoreConfigModel {
 
   factory StoreConfigModel.fromFirestore(Map<String, dynamic> json) {
     return StoreConfigModel(
-      storeName: json['storeName'] ?? 'متجرنا',
-      openTime: json['openTime'] ?? '',
-      closeTime: json['closeTime'] ?? '',
-      callNumber: json['callNumber'] ?? '',
+      storeName: (json['storeName'] ?? 'متجرنا').toString(),
+      openTime: (json['openTime'] ?? '').toString(),
+      closeTime: (json['closeTime'] ?? '').toString(),
+      callNumber: (json['callNumber'] ?? '').toString(),
       deliveryFee: json['deliveryFee'] is int ? json['deliveryFee'] : (json['deliveryFee'] as num?)?.toInt() ?? 0,
-      deliveryInfo: json['deliveryInfo'] ?? '',
-      email: json['email'] ?? '',
-      locationUrl: json['locationUrl'] ?? '',
-      returnPolicy: json['returnPolicy'] ?? '',
-      whatsappNumber: json['whatsappNumber'] ?? '',
+      deliveryInfo: (json['deliveryInfo'] ?? '').toString(),
+      email: (json['email'] ?? '').toString(),
+      locationUrl: (json['locationUrl'] ?? '').toString(),
+      returnPolicy: (json['returnPolicy'] ?? '').toString(),
+      whatsappNumber: (json['whatsappNumber'] ?? '').toString(),
     );
   }
 }

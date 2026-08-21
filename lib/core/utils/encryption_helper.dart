@@ -1,13 +1,17 @@
+import 'dart:typed_data';
 import 'package:encrypt/encrypt.dart';
 
 class EncryptionHelper {
   // 🔐 مفتاح تشفير ثابت (يجب أن يكون 32 حرفاً لـ AES-256)
-  // ⚠️ تنبيه: يجب استخدام نفس هذا المفتاح في تطبيق Admin Panel لكي يستطيع فك التشفير
   static const String _secretKey = "my-ultra-secret-key-for-aes-256!"; 
   
   static final _key = Key.fromUtf8(_secretKey);
-  static final _iv = IV.fromLength(16); // Initialization Vector
-  static final _encrypter = Encrypter(AES(_key, mode: AESMode.cbc)); // نستخدم CBC لسهولة التوافق
+  
+  // 🔑 تم استخدام IV ثابت (16 بايت من الأصفار) لضمان توافق التشفير بين التطبيقات
+  // استخدام IV.fromLength(16) كان ينتج IV عشوائي يمنع فك التشفير في تطبيق Admin
+  static final _iv = IV(Uint8List(16)); 
+  
+  static final _encrypter = Encrypter(AES(_key, mode: AESMode.cbc));
 
   /// دالة تشفير كلمة السر
   static String encryptPassword(String password) {
@@ -16,9 +20,13 @@ class EncryptionHelper {
     return encrypted.base64;
   }
 
-  /// دالة فك التشفير (اختياري للاختبار)
+  /// دالة فك التشفير
   static String decryptPassword(String encryptedBase64) {
     if (encryptedBase64.isEmpty) return "";
-    return _encrypter.decrypt(Encrypted.fromBase64(encryptedBase64), iv: _iv);
+    try {
+      return _encrypter.decrypt(Encrypted.fromBase64(encryptedBase64), iv: _iv);
+    } catch (e) {
+      return encryptedBase64;
+    }
   }
 }

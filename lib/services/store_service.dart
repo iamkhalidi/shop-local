@@ -21,11 +21,14 @@ class StoreService extends GetxService {
     try {
       isLoading.value = true;
       final doc = await _firestore.collection('store_profile').doc('config').get();
-      
+
       if (doc.exists && doc.data() != null) {
         final config = StoreConfigModel.fromFirestore(doc.data()!);
         storeConfig.value = config;
         storeName.value = config.storeName;
+        print("✅ Store Config Loaded Successfully: ${config.storeName}");
+      } else {
+        print("⚠️ Store Config Document NOT FOUND at 'store_profile/config'");
       }
     } catch (e) {
       print("❌ Error fetching store config: $e");

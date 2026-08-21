@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../routes/app_pages.dart';
 import '../../cart/controller/cart_controller.dart';
 import '../../cart/model/cart_item_model.dart';
 import '../../dashboard/controller/dashboard_controller.dart';
@@ -142,7 +143,10 @@ class ProductsScreen extends GetView<DashboardController> {
     return GestureDetector(
       onTap: () {
         productsController.selectedProduct.value = product;
-        controller.goToProductInfo(product.name, "${product.currentPrice} ريال");
+        // 🚀 تغيير: الانتقال عبر نظام المسارات (Routes) لتفعيل الـ Hero Animation
+        controller.isComingFromHome.value = true; // نعتبرها قادمة من مسار مستقل
+        // 🚀 تمرير Tag فريد لصفحة المنتجات لتجنب تكرار الـ Hero Tag في الذاكرة
+        Get.toNamed(Routes.PRODUCT_INFO, arguments: 'products_${product.id}');
       },
       child: Container(
         decoration: BoxDecoration(
@@ -174,24 +178,27 @@ class ProductsScreen extends GetView<DashboardController> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: product.imageUrl.isNotEmpty
-                            ? Image.network(
-                          product.imageUrl,
-                          fit: BoxFit.cover,
-                          cacheWidth: 400,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return const Center(
-                              child: SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              ),
-                            );
-                          },
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Icon(Icons.shopping_bag_outlined, size: 50, color: Colors.blue);
-                          },
-                        )
+                            ? Hero(
+                                tag: 'products_${product.id}',
+                                child: Image.network(
+                                  product.imageUrl,
+                                  fit: BoxFit.cover,
+                                  cacheWidth: 400,
+                                  loadingBuilder: (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return const Center(
+                                      child: SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: CircularProgressIndicator(strokeWidth: 2),
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(Icons.shopping_bag_outlined, size: 50, color: Colors.blue);
+                                  },
+                                ),
+                              )
                             : const Icon(Icons.shopping_bag_outlined, size: 50, color: Colors.blue),
                       ),
                     ),

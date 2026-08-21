@@ -362,7 +362,8 @@ class HomeScreen extends GetView<HomeController> {
       onTap: () {
         Get.find<ProductsController>().selectedProduct.value = product;
         dashboardController.isComingFromHome.value = true;
-        Get.toNamed(Routes.PRODUCT_INFO);
+        // 🚀 تمرير Tag فريد للصفحة الرئيسية لتجنب التكرار في الذاكرة
+        Get.toNamed(Routes.PRODUCT_INFO, arguments: 'home_${product.id}');
       },
       child: Container(
         width: 160,
@@ -399,18 +400,21 @@ class HomeScreen extends GetView<HomeController> {
                         ),
                         child: product.imageUrl.isNotEmpty
                             ? ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.network(
-                            product.imageUrl,
-                            fit: BoxFit.cover,
-                            cacheWidth: 300,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return const Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)));
-                            },
-                            errorBuilder: (context, error, stackTrace) => const Icon(Icons.shopping_bag_outlined, size: 44, color: Colors.blue),
-                          ),
-                        )
+                                borderRadius: BorderRadius.circular(12),
+                                child: Hero(
+                                  tag: 'home_${product.id}',
+                                  child: Image.network(
+                                    product.imageUrl,
+                                    fit: BoxFit.cover,
+                                    cacheWidth: 300,
+                                    loadingBuilder: (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return const Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)));
+                                    },
+                                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.shopping_bag_outlined, size: 44, color: Colors.blue),
+                                  ),
+                                ),
+                              )
                             : const Icon(Icons.shopping_bag_outlined, size: 44, color: Colors.blue),
                       ),
                     ),

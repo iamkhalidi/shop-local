@@ -45,10 +45,10 @@ void main() async {
     await Firebase.initializeApp();
   }
 
-  // حقن خدمات النظام الأساسية
-  await Get.putAsync(() async => ConnectivityService());
-  await Get.putAsync(() async => StoreService());
-  Get.put(SnackbarService(), permanent: true); // 🌟 حقن خدمة السناك بار لتكون متاحة عالمياً
+  // حقن خدمات النظام الأساسية (بدون await لإسراع تشغيل التطبيق)
+  Get.putAsync(() async => ConnectivityService());
+  Get.putAsync(() async => StoreService());
+  Get.put(SnackbarService(), permanent: true); 
 
   runApp(const MyApp());
 }

@@ -89,7 +89,8 @@ class FavoritesScreen extends GetView<FavoritesController> {
       onTap: () {
         productsController.selectedProduct.value = product;
         dashboardController.isComingFromHome.value = false;
-        Get.toNamed(Routes.PRODUCT_INFO);
+        // 🚀 تمرير Tag فريد لصفحة المفضلة
+        Get.toNamed(Routes.PRODUCT_INFO, arguments: 'fav_${product.id}');
       },
       child: Container(
         decoration: BoxDecoration(
@@ -121,16 +122,19 @@ class FavoritesScreen extends GetView<FavoritesController> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: product.imageUrl.isNotEmpty
-                            ? Image.network(
-                          product.imageUrl,
-                          fit: BoxFit.cover,
-                          cacheWidth: 300,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return const Center(child: SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2)));
-                          },
-                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.shopping_bag_outlined, size: 50, color: Colors.blue),
-                        )
+                            ? Hero(
+                                tag: 'fav_${product.id}',
+                                child: Image.network(
+                                  product.imageUrl,
+                                  fit: BoxFit.cover,
+                                  cacheWidth: 300,
+                                  loadingBuilder: (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return const Center(child: SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2)));
+                                  },
+                                  errorBuilder: (context, error, stackTrace) => const Icon(Icons.shopping_bag_outlined, size: 50, color: Colors.blue),
+                                ),
+                              )
                             : const Icon(Icons.shopping_bag_outlined, size: 50, color: Colors.blue),
                       ),
                     ),

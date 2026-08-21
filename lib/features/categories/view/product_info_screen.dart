@@ -15,6 +15,9 @@ class ProductInfoScreen extends GetView<DashboardController> {
     // العثور على نسخة الـ ProductsController المفتوحة مسبقاً لجلب تفاصيل المنتج المختار
     final ProductsController productsController = Get.find<ProductsController>();
     final product = productsController.selectedProduct.value;
+    
+    // 🚀 جلب الـ Tag الممرر ديناميكياً لضمان تطابق الحركة مع المصدر
+    final String heroTag = Get.arguments ?? (product?.id ?? 'default_hero');
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -64,20 +67,23 @@ class ProductInfoScreen extends GetView<DashboardController> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: product.imageUrl.isNotEmpty
-                          ? Image.network(
-                        product.imageUrl,
-                        fit: BoxFit.cover,
-                        cacheWidth: 800, // 🚀 تقييد استهلاك الذاكرة للصورة الكبيرة
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(Icons.insert_photo_outlined, size: 100, color: Colors.grey);
-                        },
-                      )
+                          ? Hero(
+                              tag: heroTag,
+                              child: Image.network(
+                                product.imageUrl,
+                                fit: BoxFit.cover,
+                                cacheWidth: 800, // 🚀 تقييد استهلاك الذاكرة للصورة الكبيرة
+                                loadingBuilder: (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                },
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(Icons.insert_photo_outlined, size: 100, color: Colors.grey);
+                                },
+                              ),
+                            )
                           : const Icon(Icons.insert_photo_outlined, size: 100, color: Colors.grey),
                     ),
                   ),

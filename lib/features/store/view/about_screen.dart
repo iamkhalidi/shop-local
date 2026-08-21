@@ -88,10 +88,24 @@ class AboutScreen extends StatelessWidget {
         textDirection: TextDirection.rtl, // 👈 دعم اللغة العربية بالكامل
         child: Obx(() {
           final config = storeService.storeConfig.value;
+          final bool loading = storeService.isLoading.value;
 
-          // حماية ضد الـ Null في حال لم تكتمل البيانات
-          if (config == null) {
+          if (loading) {
             return const Center(child: CircularProgressIndicator());
+          }
+
+          if (config == null) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 50, color: Colors.redAccent),
+                  const SizedBox(height: 10),
+                  const Text('تعذر تحميل بيانات المتجر'),
+                  TextButton(onPressed: () => storeService.fetchStoreConfig(), child: const Text('إعادة المحاولة')),
+                ],
+              ),
+            );
           }
 
           return SingleChildScrollView(
