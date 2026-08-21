@@ -67,15 +67,29 @@ class ForgotPasswordScreen extends GetView<AuthController> {
             // 🌟 رسالة توضيحية بخصوص البريد غير المرغوب فيه
             const Directionality(
               textDirection: TextDirection.rtl,
-              child: Text(
-                '>> تنبيه: في حال لم تصلك الرسالة في "البريد الوارد"، يرجى التحقق من مجلد "البريد غير المرغوب فيه" (Spam) <<',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 12, 
-                  color: Colors.orange, 
-                  fontWeight: FontWeight.bold,
-                  height: 1.5,
-                ),
+              child: Column(
+                children: [
+                  Text(
+                    '>> تنبيه: في حال لم تصلك الرسالة في "البريد الوارد"، يرجى التحقق من مجلد "البريد غير المرغوب فيه" (Spam) <<',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 12, 
+                      color: Colors.orange, 
+                      fontWeight: FontWeight.bold,
+                      height: 1.5,
+                    ),
+                  ),
+                  SizedBox(height: 15),
+                  Text(
+                    'في حال فقدت كلمة السر تواصل مع المشرف من خلال رقم المتجر.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.blueGrey,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

@@ -137,6 +137,17 @@ class LoginScreen extends GetView<AuthController> {
                     ),
                   ],
                 ),
+
+                const SizedBox(height: 10),
+
+                // زر "عن المتجر"
+                TextButton(
+                  onPressed: () => Get.toNamed(Routes.ABOUT),
+                  child: const Text(
+                    'تعرف على متجرنا ومعلومات التواصل',
+                    style: TextStyle(color: Colors.blueGrey, fontSize: 13, decoration: TextDecoration.underline),
+                  ),
+                ),
               ],
             ),
           ),
