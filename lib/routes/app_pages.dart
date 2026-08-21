@@ -19,6 +19,7 @@ import '../features/favorites/view/favorites_screen.dart';
 import '../features/orders/binding/orders_binding.dart';
 import '../features/orders/view/orders_info_screen.dart';
 import '../features/orders/view/orders_screen.dart'; // 🌟 تم تعديل المسار هنا
+import '../features/store/view/about_screen.dart';
 
 part 'app_routes.dart';
 
@@ -83,6 +84,10 @@ class AppPages {
     GetPage(
       name: _Paths.ORDER_INFO,
       page: () => const OrderInfoScreen(),
+    ),
+    GetPage(
+      name: _Paths.ABOUT,
+      page: () => const AboutScreen(),
     ),
   ];
 }

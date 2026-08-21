@@ -15,6 +15,7 @@ abstract class Routes {
   // مسارات شاشات الطلبات الجديدة
   static const ORDERS = _Paths.ORDERS;
   static const ORDER_INFO = _Paths.ORDER_INFO;
+  static const ABOUT = _Paths.ABOUT;
 }
 
 abstract class _Paths {
@@ -31,4 +32,5 @@ abstract class _Paths {
 
   static const ORDERS = '/orders';
   static const ORDER_INFO = '/order-info';
+  static const ABOUT = '/about';
 }

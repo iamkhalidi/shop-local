@@ -90,6 +90,11 @@ class HomeScreen extends GetView<HomeController> {
           ),
         ),
         actions: [
+          // ℹ️ زر معلومات المتجر
+          IconButton(
+            icon: const Icon(Icons.info_outline, color: Colors.blueGrey),
+            onPressed: () => Get.toNamed(Routes.ABOUT),
+          ),
           // 🌟 شارة المفضلة الاحترافية مع عداد مباشر
           Obx(() {
             final count = favoritesController.favoriteProducts.length;
@@ -233,89 +238,110 @@ class HomeScreen extends GetView<HomeController> {
 
   // 🚀 بناء العبارة الختامية وتفاصيل المتجر الاحترافية
   Widget _buildFooter(DashboardController dashboardController, StoreService storeService) {
-    return Container(
-      padding: const EdgeInsets.only(top: 30.0, left: 20.0, right: 20.0, bottom: 120.0),
-      color: Colors.white,
-      child: Column(
-        children: [
-          const Divider(color: Colors.grey, thickness: 0.2),
-          const SizedBox(height: 15),
-          
-          // الانتقال للفئات
-          GestureDetector(
-            onTap: () => dashboardController.changePage(1),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "انتقل إلى صفحة الفئات لرؤية جميع المنتجات",
-                  style: TextStyle(
-                    color: Colors.blue.shade700,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
+    return Obx(() {
+      final config = storeService.storeConfig.value;
+      
+      return Container(
+        padding: const EdgeInsets.only(top: 30.0, left: 20.0, right: 20.0, bottom: 120.0),
+        color: Colors.white,
+        child: Column(
+          children: [
+            const Divider(color: Colors.grey, thickness: 0.2),
+            const SizedBox(height: 15),
+            
+            // الانتقال للفئات
+            GestureDetector(
+              onTap: () => dashboardController.changePage(1),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "انتقل إلى صفحة الفئات لرؤية جميع المنتجات",
+                    style: TextStyle(
+                      color: Colors.blue.shade700,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                Icon(Icons.arrow_forward_ios, size: 14, color: Colors.blue.shade700),
-              ],
-            ),
-          ),
-          
-          const SizedBox(height: 50),
-          
-          // تفاصيل الحقوق والمتجر
-          Obx(() => Text(
-            "جميع الحقوق محفوظة لـ ${storeService.storeName.value} 2026 ©",
-            style: const TextStyle(fontSize: 13, color: Colors.black87, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
-          )),
-          
-          const SizedBox(height: 15),
-          
-          // رقم التواصل
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.phone_android, size: 16, color: Colors.green),
-              SizedBox(width: 8),
-              Text(
-                "+966592283947",
-                style: TextStyle(fontSize: 13, color: Colors.blueGrey, fontWeight: FontWeight.w500),
+                  const SizedBox(width: 8),
+                  Icon(Icons.arrow_forward_ios, size: 14, color: Colors.blue.shade700),
+                ],
               ),
-            ],
-          ),
-          
-          const SizedBox(height: 10),
-          
-          // البريد الإلكتروني
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.alternate_email, size: 16, color: Colors.orange),
-              SizedBox(width: 8),
-              Text(
-                "iq2lfl@gmail.com",
-                style: TextStyle(fontSize: 13, color: Colors.blueGrey, fontWeight: FontWeight.w500),
+            ),
+            
+            const SizedBox(height: 50),
+            
+            // تفاصيل الحقوق والمتجر
+            Directionality(
+              textDirection: TextDirection.rtl,
+              child: Text(
+                "جميع الحقوق محفوظة لـ ${storeService.storeName.value} 2026 ©",
+                style: const TextStyle(fontSize: 13, color: Colors.black87, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
               ),
-            ],
-          ),
-          
-          const SizedBox(height: 25),
-          
-          // المطور
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(20),
             ),
-            child: const Text(
-              "تطوير وتصميم: خالد",
-              style: TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.bold),
+            
+            const SizedBox(height: 20),
+            
+            // أرقام التواصل والبريد
+            if (config != null)
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 20,
+                runSpacing: 10,
+                children: [
+                  // رقم الاتصال
+                  _buildFooterContactItem(
+                    icon: Icons.phone_android,
+                    color: Colors.green,
+                    text: config.callNumber,
+                  ),
+                  // واتساب
+                  _buildFooterContactItem(
+                    icon: Icons.chat,
+                    color: Colors.teal,
+                    text: config.whatsappNumber,
+                  ),
+                  // البريد الإلكتروني
+                  _buildFooterContactItem(
+                    icon: Icons.alternate_email,
+                    color: Colors.orange,
+                    text: config.email,
+                  ),
+                ],
+              ),
+            
+            const SizedBox(height: 30),
+            
+            // المطور
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Text(
+                "تطوير وتصميم: خالد",
+                style: TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.bold),
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildFooterContactItem({required IconData icon, required Color color, required String text}) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 16, color: color),
+        const SizedBox(width: 6),
+        Text(
+          text,
+          style: const TextStyle(fontSize: 12, color: Colors.blueGrey, fontWeight: FontWeight.w500),
+        ),
+      ],
     );
   }
 
