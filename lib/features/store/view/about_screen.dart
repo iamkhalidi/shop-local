@@ -187,7 +187,7 @@ class AboutScreen extends StatelessWidget {
                 const SizedBox(height: 40),
                 Text(
                   "جميع الحقوق محفوظة لـ ${config.storeName} © 2026",
-                  style: TextStyle(color: Colors.grey.shade400, fontSize: 11, fontFamily: 'Cairo'),
+                  style: TextStyle(color: Colors.grey.shade500, fontSize: 11, fontFamily: 'Cairo'),
                 ),
                 const SizedBox(height: 20),
               ],

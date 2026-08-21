@@ -32,7 +32,7 @@ class HomeScreen extends GetView<HomeController> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        leadingWidth: 110,
+        leadingWidth: 140, // 👈 تقليل العرض لإعطاء مساحة أكبر للعنوان
         // 🕒 عرض أوقات العمل كمستطيل متدلي أسفل الـ AppBar
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(30),
@@ -72,82 +72,92 @@ class HomeScreen extends GetView<HomeController> {
             );
           }),
         ),
-        leading: Padding(
-          padding: const EdgeInsets.only(right: 8.0),
-          child: TextButton.icon(
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.orange,
-              padding: EdgeInsets.zero,
+        leading: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // 1. زر طلباتي
+            TextButton.icon(
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.orange,
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              icon: const Icon(Icons.receipt_long, color: Colors.orange, size: 18),
+              label: const Text(
+                'طلباتي',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+              ),
+              onPressed: () => Get.toNamed(Routes.ORDERS),
             ),
-            icon: const Icon(Icons.receipt_long, color: Colors.orange, size: 20),
-            label: const Text(
-              'طلباتي',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-            ),
-            onPressed: () {
-              Get.toNamed(Routes.ORDERS);
-            },
-          ),
-        ),
-        actions: [
-          // ℹ️ زر معلومات المتجر
-          IconButton(
-            icon: const Icon(Icons.info_outline, color: Colors.blueGrey),
-            onPressed: () => Get.toNamed(Routes.ABOUT),
-          ),
-          // 🌟 شارة المفضلة الاحترافية مع عداد مباشر
-          Obx(() {
-            final count = favoritesController.favoriteProducts.length;
-            return Stack(
-              alignment: Alignment.center,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.favorite_border, color: Colors.redAccent, size: 26),
-                  onPressed: () => Get.toNamed(Routes.FAVORITES),
-                ),
-                if (count > 0)
-                  Positioned(
-                    top: 5,
-                    right: 5,
-                    child: Container(
-                      padding: const EdgeInsets.all(2),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.shade700,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 1.5), // إطار أبيض ناعم للفصل
-                      ),
-                      constraints: const BoxConstraints(
-                        minWidth: 17,
-                        minHeight: 17,
-                      ),
-                      child: Text(
-                        '$count',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 9,
-                          fontWeight: FontWeight.bold,
+            // 2. زر المفضلة
+            Obx(() {
+              final count = favoritesController.favoriteProducts.length;
+              return Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.favorite, color: Colors.redAccent, size: 22),
+                    onPressed: () => Get.toNamed(Routes.FAVORITES),
+                    constraints: const BoxConstraints(),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                  ),
+                  if (count > 0)
+                    Positioned(
+                      top: -2,
+                      right: 2,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.shade700,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 1),
                         ),
-                        textAlign: TextAlign.center,
+                        constraints: const BoxConstraints(minWidth: 14, minHeight: 14),
+                        child: Text(
+                          '$count',
+                          style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
-                  ),
-              ],
-            );
-          }),
+                ],
+              );
+            }),
+          ],
+        ),
+        actions: [
+          // 3. زر عن المتجر
+          TextButton.icon(
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.blueGrey,
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            icon: const Icon(Icons.storefront_outlined, color: Colors.blueGrey, size: 18),
+            label: const Text(
+              'عن المتجر',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.blueGrey),
+            ),
+            onPressed: () => Get.toNamed(Routes.ABOUT),
+          ),
+          // 4. زر الحساب
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 4),
             child: TextButton.icon(
               style: TextButton.styleFrom(
                 foregroundColor: Colors.blue,
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              icon: const Icon(Icons.person, color: Colors.blue),
+              icon: const Icon(Icons.person, color: Colors.blue, size: 18),
               label: const Text(
                 'الحساب',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.blue),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.blue),
               ),
-              onPressed: () {
-                Get.toNamed(Routes.PROFILE);
-              },
+              onPressed: () => Get.toNamed(Routes.PROFILE),
             ),
           )
         ],
@@ -246,9 +256,7 @@ class HomeScreen extends GetView<HomeController> {
         color: Colors.white,
         child: Column(
           children: [
-            const Divider(color: Colors.grey, thickness: 0.2),
-            const SizedBox(height: 15),
-            
+
             // الانتقال للفئات
             GestureDetector(
               onTap: () => dashboardController.changePage(1),
@@ -268,15 +276,18 @@ class HomeScreen extends GetView<HomeController> {
                 ],
               ),
             ),
-            
-            const SizedBox(height: 50),
+            const SizedBox(height: 40),
+
+            const Divider(color: Colors.grey, thickness: 0.2),
+
+            const SizedBox(height: 20),
             
             // تفاصيل الحقوق والمتجر
             Directionality(
               textDirection: TextDirection.rtl,
               child: Text(
                 "جميع الحقوق محفوظة لـ ${storeService.storeName.value} 2026 ©",
-                style: const TextStyle(fontSize: 13, color: Colors.black87, fontWeight: FontWeight.bold),
+                style:  TextStyle(fontSize: 13, color: Colors.grey.shade500, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
             ),
