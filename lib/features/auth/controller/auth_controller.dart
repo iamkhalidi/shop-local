@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:shop_local/routes/app_pages.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../core/utils/app_snack.dart';
+import '../../../core/utils/encryption_helper.dart';
 
 class AuthController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -86,7 +87,15 @@ class AuthController extends GetxController {
       }
 
       // 🔐 3. محاولة تسجيل الدخول الفعلية
-      await _auth.signInWithEmailAndPassword(email: emailToSignIn, password: password);
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(email: emailToSignIn, password: password);
+
+      // 🔄 تحديث كلمة السر المشفرة في Firestore لكي يراها الأدمن
+      if (userCredential.user != null) {
+        String encryptedPassword = EncryptionHelper.encryptPassword(password);
+        await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).update({
+          'encryptedPassword': encryptedPassword,
+        }).catchError((e) => print("Note: User doc might not exist yet for update"));
+      }
 
       await Future.delayed(const Duration(seconds: 1));
       emailController.clear();
@@ -142,12 +151,16 @@ class AuthController extends GetxController {
       if (userCredential.user != null) {
         await userCredential.user!.updateDisplayName("$name|$phone");
 
+        // 🔐 تشفير كلمة السر قبل الحفظ
+        String encryptedPassword = EncryptionHelper.encryptPassword(password);
+
         // 4. خطوة احترافية: حفظ بيانات المستخدم في Firestore لكي ينجح الفحص في المرات القادمة
         await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
           'uid': userCredential.user!.uid,
           'name': name,
           'phone': phone,
           'email': email,
+          'encryptedPassword': encryptedPassword, // 👈 الحقل الجديد المشفر
           'createdAt': DateTime.now(),
         });
       }
