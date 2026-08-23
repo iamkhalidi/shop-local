@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:web/web.dart' as web; // استيراد لدعم الويب المباشر
 import '../../../services/store_service.dart';
+import '../../../core/widgets/loading_retry_widget.dart'; // 🚀 استيراد الودجت الجديد
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({Key? key}) : super(key: key);
@@ -84,130 +85,121 @@ class AboutScreen extends StatelessWidget {
           onPressed: () => Get.back(),
         ),
       ),
-      body: Directionality(
-        textDirection: TextDirection.rtl, // 👈 دعم اللغة العربية بالكامل
-        child: Obx(() {
-          final config = storeService.storeConfig.value;
-          final bool loading = storeService.isLoading.value;
+      body: LoadingRetryWidget(
+        isLoading: storeService.isLoading,
+        onRetry: () => storeService.fetchStoreConfig(),
+        child: Directionality(
+          textDirection: TextDirection.rtl, // 👈 دعم اللغة العربية بالكامل
+          child: Obx(() {
+            final config = storeService.storeConfig.value;
 
-          if (loading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+            if (config == null) {
+              return const Center(
+                child: Text('تعذر تحميل بيانات المتجر'),
+              );
+            }
 
-          if (config == null) {
-            return Center(
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, size: 50, color: Colors.redAccent),
-                  const SizedBox(height: 10),
-                  const Text('تعذر تحميل بيانات المتجر'),
-                  TextButton(onPressed: () => storeService.fetchStoreConfig(), child: const Text('إعادة المحاولة')),
+                  // أيقونة المتجر
+                  Container(
+                    height: 100,
+                    width: 100,
+                    margin: const EdgeInsets.only(top: 10, bottom: 15),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.blue.shade100, width: 2),
+                    ),
+                    child: Icon(Icons.storefront, size: 50, color: Colors.blue.shade700),
+                  ),
+                  
+                  Text(
+                    config.storeName,
+                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87, fontFamily: 'Cairo'),
+                  ),
+                  const SizedBox(height: 25),
+
+                  // قسم التواصل
+                  _buildSection(
+                    title: 'معلومات التواصل',
+                    children: [
+                      _buildInfoTile(
+                        icon: Icons.phone,
+                        color: Colors.green,
+                        title: 'رقم الهاتف',
+                        subtitle: config.callNumber,
+                        onTap: () => _makeCall(config.callNumber),
+                      ),
+                      _buildInfoTile(
+                        icon: Icons.chat,
+                        color: Colors.teal,
+                        title: 'واتساب',
+                        subtitle: config.whatsappNumber,
+                        onTap: () => _launchWhatsApp(config.whatsappNumber),
+                      ),
+                      _buildInfoTile(
+                        icon: Icons.email,
+                        color: Colors.orange,
+                        title: 'البريد الإلكتروني',
+                        subtitle: config.email,
+                        onTap: null, // 👈 غير قابل للضغط كما طلبت
+                      ),
+                      _buildInfoTile(
+                        icon: Icons.location_on,
+                        color: Colors.redAccent,
+                        title: 'موقعنا على الخريطة',
+                        subtitle: 'اضغط لفتح جوجل ماب',
+                        onTap: () => _launchUrl(config.locationUrl),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // قسم التوصيل وأوقات العمل
+                  _buildSection(
+                    title: 'التوصيل والعمل',
+                    children: [
+                      _buildInfoTile(
+                        icon: Icons.access_time,
+                        color: Colors.blue,
+                        title: 'أوقات العمل',
+                        subtitle: 'من ${config.openTime} إلى ${config.closeTime}',
+                      ),
+                      _buildInfoTile(
+                        icon: Icons.delivery_dining,
+                        color: Colors.purple,
+                        title: 'معلومات التوصيل',
+                        subtitle: config.deliveryInfo,
+                      ),
+                      _buildInfoTile(
+                        icon: Icons.payments,
+                        color: Colors.indigo,
+                        title: 'رسوم التوصيل',
+                        subtitle: '${config.deliveryFee} ريال', // 👈 عرض الرقم فقط
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // قسم سياسة الاسترجاع بتصميم جديد
+                  _buildReturnPolicyCard(config.returnPolicy),
+
+                  const SizedBox(height: 40),
+                  Text(
+                    "جميع الحقوق محفوظة لـ ${config.storeName} © 2026",
+                    style: TextStyle(color: Colors.grey.shade500, fontSize: 11, fontFamily: 'Cairo'),
+                  ),
+                  const SizedBox(height: 20),
                 ],
               ),
             );
-          }
-
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                // أيقونة المتجر
-                Container(
-                  height: 100,
-                  width: 100,
-                  margin: const EdgeInsets.only(top: 10, bottom: 15),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.blue.shade100, width: 2),
-                  ),
-                  child: Icon(Icons.storefront, size: 50, color: Colors.blue.shade700),
-                ),
-                
-                Text(
-                  config.storeName,
-                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87, fontFamily: 'Cairo'),
-                ),
-                const SizedBox(height: 25),
-
-                // قسم التواصل
-                _buildSection(
-                  title: 'معلومات التواصل',
-                  children: [
-                    _buildInfoTile(
-                      icon: Icons.phone,
-                      color: Colors.green,
-                      title: 'رقم الهاتف',
-                      subtitle: config.callNumber,
-                      onTap: () => _makeCall(config.callNumber),
-                    ),
-                    _buildInfoTile(
-                      icon: Icons.chat,
-                      color: Colors.teal,
-                      title: 'واتساب',
-                      subtitle: config.whatsappNumber,
-                      onTap: () => _launchWhatsApp(config.whatsappNumber),
-                    ),
-                    _buildInfoTile(
-                      icon: Icons.email,
-                      color: Colors.orange,
-                      title: 'البريد الإلكتروني',
-                      subtitle: config.email,
-                      onTap: null, // 👈 غير قابل للضغط كما طلبت
-                    ),
-                    _buildInfoTile(
-                      icon: Icons.location_on,
-                      color: Colors.redAccent,
-                      title: 'موقعنا على الخريطة',
-                      subtitle: 'اضغط لفتح جوجل ماب',
-                      onTap: () => _launchUrl(config.locationUrl),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 20),
-
-                // قسم التوصيل وأوقات العمل
-                _buildSection(
-                  title: 'التوصيل والعمل',
-                  children: [
-                    _buildInfoTile(
-                      icon: Icons.access_time,
-                      color: Colors.blue,
-                      title: 'أوقات العمل',
-                      subtitle: 'من ${config.openTime} إلى ${config.closeTime}',
-                    ),
-                    _buildInfoTile(
-                      icon: Icons.delivery_dining,
-                      color: Colors.purple,
-                      title: 'معلومات التوصيل',
-                      subtitle: config.deliveryInfo,
-                    ),
-                    _buildInfoTile(
-                      icon: Icons.payments,
-                      color: Colors.indigo,
-                      title: 'رسوم التوصيل',
-                      subtitle: '${config.deliveryFee} ريال', // 👈 عرض الرقم فقط
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 20),
-
-                // قسم سياسة الاسترجاع بتصميم جديد
-                _buildReturnPolicyCard(config.returnPolicy),
-
-                const SizedBox(height: 40),
-                Text(
-                  "جميع الحقوق محفوظة لـ ${config.storeName} © 2026",
-                  style: TextStyle(color: Colors.grey.shade500, fontSize: 11, fontFamily: 'Cairo'),
-                ),
-                const SizedBox(height: 20),
-              ],
-            ),
-          );
-        }),
+          }),
+        ),
       ),
     );
   }

@@ -110,6 +110,13 @@ class ProductsController extends GetxController {
     }
   }
 
+  // دالة إعادة المحاولة (تستخدم المعرف الحالي)
+  Future<void> refreshProducts() async {
+    if (_currentCategoryId.isNotEmpty) {
+      await fetchProducts(_currentCategoryId);
+    }
+  }
+
   // دالة جلب المزيد من المنتجات عند السكرول (Pagination)
   Future<void> fetchMoreProducts() async {
     if (isSearchMode.value || isFetchingMore.value || !hasNextPage.value || isLoadingProducts.value) return;

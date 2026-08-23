@@ -9,6 +9,7 @@ import '../../categories/controller/products_controller.dart';
 import '../controller/home_controller.dart';
 import '../../../services/store_service.dart';
 import '../../favorites/controller/favorites_controller.dart'; // 👈 استيراد كنترولر المفضلة
+import '../../../core/widgets/loading_retry_widget.dart'; // 🚀 استيراد الودجت الجديد
 
 class HomeScreen extends GetView<HomeController> {
   const HomeScreen({Key? key}) : super(key: key);
@@ -162,87 +163,87 @@ class HomeScreen extends GetView<HomeController> {
           )
         ],
       ),
-      body: Obx(() {
-        if (controller.isLoadingCategories.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
+      body: LoadingRetryWidget(
+        isLoading: controller.isLoadingCategories,
+        onRetry: () => controller.loadHomeData(),
+        child: Obx(() {
+          if (controller.categories.isEmpty) {
+            return const Center(
+              child: Text(
+                "لا توجد فئات معروضة حالياً.",
+                style: TextStyle(color: Colors.grey, fontSize: 16),
+              ),
+            );
+          }
 
-        if (controller.categories.isEmpty) {
-          return const Center(
-            child: Text(
-              "لا توجد فئات معروضة حالياً.",
-              style: TextStyle(color: Colors.grey, fontSize: 16),
-            ),
-          );
-        }
+          return ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            itemCount: controller.categories.length + 1, // 🚀 إضافة 1 لعرض العبارة الختامية
+            itemBuilder: (context, categoryIndex) {
+              // التحقق هل وصلنا لنهاية قائمة الفئات
+              if (categoryIndex == controller.categories.length) {
+                return _buildFooter(dashboardController, storeService);
+              }
 
-        return ListView.builder(
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
-          itemCount: controller.categories.length + 1, // 🚀 إضافة 1 لعرض العبارة الختامية
-          itemBuilder: (context, categoryIndex) {
-            // التحقق هل وصلنا لنهاية قائمة الفئات
-            if (categoryIndex == controller.categories.length) {
-              return _buildFooter(dashboardController, storeService);
-            }
+              final category = controller.categories[categoryIndex];
 
-            final category = controller.categories[categoryIndex];
-
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  child: Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          category.nameAr,
-                          style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            category.nameAr,
+                            style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
 
-                // 🚀 تحسين: جعل كل قائمة منتجات تفاعلية بشكل مستقل
-                Obx(() {
-                  final categoryProducts = controller.categoryProductsMap[category.id] ?? [];
-                  
-                  return SizedBox(
-                    height: 240,
-                    child: categoryProducts.isEmpty 
-                        ? (controller.categoryProductsMap.containsKey(category.id) 
-                            ? const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Text('لا توجد منتجات حالياً.', style: TextStyle(color: Colors.grey, fontSize: 13)),
-                                ),
-                              )
-                            : const Center(child: SizedBox(width: 30, height: 30, child: CircularProgressIndicator(strokeWidth: 2)))) // لودر صغير خاص بالفئة
-                        : ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                            itemCount: categoryProducts.length,
-                            itemBuilder: (context, productIndex) {
-                              final product = categoryProducts[productIndex];
-                              return _buildProductCard(product, dashboardController);
-                            },
-                          ),
-                  );
-                }),
-                const SizedBox(height: 12),
-              ],
-            );
-          },
-        );
-      }),
+                  // 🚀 تحسين: جعل كل قائمة منتجات تفاعلية بشكل مستقل
+                  Obx(() {
+                    final categoryProducts = controller.categoryProductsMap[category.id] ?? [];
+                    
+                    return SizedBox(
+                      height: 240,
+                      child: categoryProducts.isEmpty 
+                          ? (controller.categoryProductsMap.containsKey(category.id) 
+                              ? const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Text('لا توجد منتجات حالياً.', style: TextStyle(color: Colors.grey, fontSize: 13)),
+                                  ),
+                                )
+                              : const Center(child: SizedBox(width: 30, height: 30, child: CircularProgressIndicator(strokeWidth: 2)))) // لودر صغير خاص بالفئة
+                          : ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                              itemCount: categoryProducts.length,
+                              itemBuilder: (context, productIndex) {
+                                final product = categoryProducts[productIndex];
+                                return _buildProductCard(product, dashboardController);
+                              },
+                            ),
+                    );
+                  }),
+                  const SizedBox(height: 12),
+                ],
+              );
+            },
+          );
+        }),
+      ),
     );
   }
 

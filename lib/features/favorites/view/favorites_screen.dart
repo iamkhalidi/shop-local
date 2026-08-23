@@ -6,6 +6,7 @@ import '../../../routes/app_pages.dart';
 import '../../categories/controller/products_controller.dart'; // استيراد كنترولر المنتجات لتمرير المنتج المختار
 import '../../dashboard/controller/dashboard_controller.dart'; // استيراد دالة التنقل للتفاصيل
 import '../controller/favorites_controller.dart';
+import '../../../core/widgets/loading_retry_widget.dart'; // 🚀 استيراد الودجت الجديد
 
 class FavoritesScreen extends GetView<FavoritesController> {
   const FavoritesScreen({Key? key}) : super(key: key);
@@ -25,61 +26,61 @@ class FavoritesScreen extends GetView<FavoritesController> {
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.black),
       ),
-      body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
+      body: LoadingRetryWidget(
+        isLoading: controller.isLoading,
+        onRetry: () => controller.loadFavorites(),
+        child: Obx(() {
+          if (controller.favoriteProducts.isEmpty) {
+            return const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.favorite_border, size: 70, color: Colors.grey),
+                  const SizedBox(height: 16),
+                  Text(
+                    "قائمة المفضلة فارغة حالياً.",
+                    style: TextStyle(color: Colors.grey, fontSize: 16),
+                  ),
+                ],
+              ),
+            );
+          }
 
-        if (controller.favoriteProducts.isEmpty) {
-          return const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.favorite_border, size: 70, color: Colors.grey),
-                SizedBox(height: 16),
-                Text(
-                  "قائمة المفضلة فارغة حالياً.",
-                  style: TextStyle(color: Colors.grey, fontSize: 16),
+          // 🌟 عرض المنتجات المفضلة مع دعم التجزئة (Infinite Scroll) 🌟
+          return CustomScrollView(
+            controller: controller.scrollController,
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0, bottom: 20),
+                sliver: SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 15,
+                    mainAxisSpacing: 15,
+                    childAspectRatio: 0.72,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final product = controller.displayedFavorites[index];
+                      return _buildFavoriteCard(context, product, dashboardController, productsController);
+                    },
+                    childCount: controller.displayedFavorites.length,
+                  ),
                 ),
-              ],
-            ),
+              ),
+              // 🚀 مؤشر تحميل عند جلب المزيد من المفضلة
+              if (controller.isFetchingMore.value)
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+              const SliverToBoxAdapter(child: SizedBox(height: 90)), // مساحة الشريط السفلي
+            ],
           );
-        }
-
-        // 🌟 عرض المنتجات المفضلة مع دعم التجزئة (Infinite Scroll) 🌟
-        return CustomScrollView(
-          controller: controller.scrollController,
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0, bottom: 20),
-              sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 15,
-                  mainAxisSpacing: 15,
-                  childAspectRatio: 0.72,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final product = controller.displayedFavorites[index];
-                    return _buildFavoriteCard(context, product, dashboardController, productsController);
-                  },
-                  childCount: controller.displayedFavorites.length,
-                ),
-              ),
-            ),
-            // 🚀 مؤشر تحميل عند جلب المزيد من المفضلة
-            if (controller.isFetchingMore.value)
-              const SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-              ),
-            const SliverToBoxAdapter(child: SizedBox(height: 90)), // مساحة الشريط السفلي
-          ],
-        );
-      }),
+        }),
+      ),
     );
   }
 

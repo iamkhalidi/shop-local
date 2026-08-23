@@ -6,6 +6,7 @@ import '../../cart/model/cart_item_model.dart';
 import '../../dashboard/controller/dashboard_controller.dart';
 import '../../favorites/widgets/favorite_button_widget.dart';
 import '../controller/products_controller.dart';
+import '../../../core/widgets/loading_retry_widget.dart'; // 🚀 استيراد الودجت الجديد
 
 class ProductsScreen extends GetView<DashboardController> {
   const ProductsScreen({Key? key}) : super(key: key);
@@ -76,67 +77,66 @@ class ProductsScreen extends GetView<DashboardController> {
       ),
       body: Padding(
         padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0, bottom: 90.0),
-        child: Obx(() {
-          // 1. حالة التحميل والانتظار
-          if (productsController.isLoadingProducts.value) {
-            return const Center(child: CircularProgressIndicator());
-          }
+        child: LoadingRetryWidget(
+          isLoading: productsController.isLoadingProducts,
+          onRetry: () => productsController.refreshProducts(),
+          child: Obx(() {
+            final items = productsController.displayedProducts;
 
-          final items = productsController.displayedProducts;
+            // 2. حالة عدم وجود منتجات في الفئة
+            if (items.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.search_off, size: 60, color: Colors.grey[400]),
+                    const SizedBox(height: 16),
+                    Text(
+                      productsController.searchQuery.isEmpty
+                          ? "لا توجد منتجات متوفرة في هذه الفئة حالياً."
+                          : "لم يتم العثور على نتائج للبحث عن '${productsController.searchQuery.value}'",
+                      style: const TextStyle(color: Colors.grey, fontSize: 15),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              );
+            }
 
-          // 2. حالة عدم وجود منتجات في الفئة
-          if (items.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.search_off, size: 60, color: Colors.grey[400]),
-                  const SizedBox(height: 16),
-                  Text(
-                    productsController.searchQuery.isEmpty
-                        ? "لا توجد منتجات متوفرة في هذه الفئة حالياً."
-                        : "لم يتم العثور على نتائج للبحث عن '${productsController.searchQuery.value}'",
-                    style: const TextStyle(color: Colors.grey, fontSize: 15),
-                    textAlign: TextAlign.center,
+            // 3. عرض المنتجات الحقيقية مع دعم التمرير اللانهائي والبحث
+            return CustomScrollView(
+              controller: productsController.scrollController,
+              slivers: [
+                SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 15,
+                    mainAxisSpacing: 15,
+                    childAspectRatio: 0.72,
                   ),
-                ],
-              ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final product = items[index];
+                      return Directionality(
+                        textDirection: TextDirection.rtl,
+                        child: _buildProductCard(context, product, productsController),
+                      );
+                    },
+                    childCount: items.length,
+                  ),
+                ),
+                // 🚀 عرض مؤشر تحميل عند جلب المزيد (يختفي في وضع البحث لضمان الدقة)
+                if (productsController.isFetchingMore.value && !productsController.isSearchMode.value)
+                  const SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                  ),
+              ],
             );
-          }
-
-          // 3. عرض المنتجات الحقيقية مع دعم التمرير اللانهائي والبحث
-          return CustomScrollView(
-            controller: productsController.scrollController,
-            slivers: [
-              SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 15,
-                  mainAxisSpacing: 15,
-                  childAspectRatio: 0.72,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final product = items[index];
-                    return Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: _buildProductCard(context, product, productsController),
-                    );
-                  },
-                  childCount: items.length,
-                ),
-              ),
-              // 🚀 عرض مؤشر تحميل عند جلب المزيد (يختفي في وضع البحث لضمان الدقة)
-              if (productsController.isFetchingMore.value && !productsController.isSearchMode.value)
-                const SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
-                ),
-            ],
-          );
-        }),
+          }),
+        ),
       ),
     );
   }
