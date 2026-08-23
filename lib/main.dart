@@ -58,8 +58,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: "Shop Local",
+    return Obx(() => GetMaterialApp(
+      title: StoreService.instance.storeName.value,
       debugShowCheckedModeBanner: false,
       initialBinding: AuthBinding(),
       initialRoute: AppPages.INITIAL,
@@ -83,7 +83,7 @@ class MyApp extends StatelessWidget {
           );
         });
       },
-    );
+    ));
   }
 } // 🌟 تم تعديل القوس هنا ليغلق الكلاس بشكل صحيح بدلاً من الفاصلة التي كانت موجودة بالخطأ
 
