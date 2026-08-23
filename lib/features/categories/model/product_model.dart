@@ -25,13 +25,16 @@ class ProductModel {
 
   // تحويل البيانات القادمة من Firestore (Map) إلى Object
   factory ProductModel.fromJson(Map<String, dynamic> json) {
+    final double original = (json['original_price'] as num?)?.toDouble() ?? 0.0;
+    final double current = (json['current_price'] as num?)?.toDouble() ?? 0.0;
+
     return ProductModel(
       id: json['id'] ?? '',
       name: json['name_'] ?? '', // نلاحظ هنا أن الحقل المرفوع يسمى name_
       description: json['description'] ?? '',
-      originalPrice: (json['original_price'] as num?)?.toDouble() ?? 0.0,
-      currentPrice: (json['current_price'] as num?)?.toDouble() ?? 0.0,
-      hasDiscount: json['has_discount'] ?? false,
+      originalPrice: original,
+      currentPrice: current,
+      hasDiscount: original > 0,
       stockQuantity: json['stock_quantity'] ?? 0,
       unitType: json['unit_type'] ?? '',
       sizeVolume: (json['size_volume'] as num?)?.toDouble() ?? 0.0,

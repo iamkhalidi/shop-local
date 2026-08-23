@@ -118,7 +118,10 @@ class ProductsScreen extends GetView<DashboardController> {
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
                     final product = items[index];
-                    return _buildProductCard(context, product, productsController);
+                    return Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: _buildProductCard(context, product, productsController),
+                    );
                   },
                   childCount: items.length,
                 ),
@@ -217,13 +220,53 @@ class ProductsScreen extends GetView<DashboardController> {
                     style: const TextStyle(color: Colors.grey, fontSize: 12),
                     textAlign: TextAlign.start,
                   ),
+                  const SizedBox(height: 4),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: Colors.indigo.shade50,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Icon(Icons.local_shipping, size: 12, color: Colors.indigo),
+                          SizedBox(width: 4),
+                          Text(
+                            "توصيل",
+                            style: TextStyle(
+                              color: Colors.indigo,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 5),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                          '${product.currentPrice} ريال',
-                          style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 14)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                              '${product.currentPrice} ريال',
+                              style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 14)
+                          ),
+                          if (product.hasDiscount)
+                            Text(
+                              '${product.originalPrice} ريال',
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 11,
+                                decoration: TextDecoration.lineThrough,
+                              ),
+                            ),
+                        ],
                       ),
                       GestureDetector(
                         onTap: () {

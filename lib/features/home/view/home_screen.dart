@@ -422,11 +422,51 @@ class HomeScreen extends GetView<HomeController> {
                     Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black87), maxLines: 1, overflow: TextOverflow.ellipsis),
                     const SizedBox(height: 2),
                     Text("${product.sizeVolume > 0 ? product.sizeVolume : ''} ${product.unitType}", style: const TextStyle(color: Colors.grey, fontSize: 11)),
+                    const SizedBox(height: 4),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: Colors.indigo.shade50,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Icon(Icons.local_shipping, size: 12, color: Colors.indigo),
+                            SizedBox(width: 4),
+                            Text(
+                              "توصيل",
+                              style: TextStyle(
+                                color: Colors.indigo,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('${product.currentPrice} ريال', style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 13)),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('${product.currentPrice} ريال', style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 13)),
+                            if (product.hasDiscount)
+                              Text(
+                                '${product.originalPrice} ريال',
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 10,
+                                  decoration: TextDecoration.lineThrough,
+                                ),
+                              ),
+                          ],
+                        ),
                         GestureDetector(
                           onTap: () async => await Get.find<CartController>().addProductToCart(product),
                           child: const Icon(Icons.add_circle, color: Colors.blue, size: 22),
@@ -437,16 +477,16 @@ class HomeScreen extends GetView<HomeController> {
                 ),
               ),
             ),
-            // if (product.hasDiscount)
-            //   Positioned(
-            //     top: 8,
-            //     left: 8,
-            //     child: Container(
-            //       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-            //       decoration: BoxDecoration(color: Colors.redAccent, borderRadius: BorderRadius.circular(6)),
-            //       child: const Text("خصم", style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
-            //     ),
-            //   ),
+            if (product.hasDiscount)
+              Positioned(
+                top: 8,
+                left: 8,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(color: Colors.redAccent, borderRadius: BorderRadius.circular(8)),
+                  child: const Text("خصم", style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                ),
+              ),
           ],
         ),
       ),

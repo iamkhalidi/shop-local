@@ -147,7 +147,21 @@ class FavoritesScreen extends GetView<FavoritesController> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('${product.currentPrice} ريال', style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 14)),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('${product.currentPrice} ريال', style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 14)),
+                          if (product.hasDiscount)
+                            Text(
+                              '${product.originalPrice} ريال',
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 11,
+                                decoration: TextDecoration.lineThrough,
+                              ),
+                            ),
+                        ],
+                      ),
                       const Icon(Icons.add_circle, color: Colors.blue, size: 24),
                     ],
                   ),
