@@ -71,8 +71,10 @@ class SplashController extends GetxController with GetSingleTickerProviderStateM
 
 
   Future<void> navigateToHome() async {
-    // تقليل الانتظار ليكون التطبيق أسرع (مثلاً ثانيتين بدلاً من 3)
-    await Future.delayed(const Duration(seconds: 2));
+    // 🚀 تحسين للويب: تقليل وقت الانتظار لأن المتصفح أظهر لودر بالفعل
+    // الموبايل يحتاج وقت أطول قليلاً للأنيميشن
+    int waitTime = kIsWeb ? 1 : 2;
+    await Future.delayed(Duration(seconds: waitTime));
 
     // استدعاء دالة الفحص التي أضفناها بالأعلى في الـ AuthController
     Get.find<AuthController>().checkUserStatus();

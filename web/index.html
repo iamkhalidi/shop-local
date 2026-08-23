@@ -5,49 +5,90 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="Shop Local Grocery Store">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="shop_local">
+  <meta name="apple-mobile-web-app-title" content="Shop Local">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>shop local</title>
+  <title>Shop Local</title>
   <link rel="manifest" href="manifest.json">
 
-  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-
   <style>
-    /* تقليل استهلاك الذاكرة عبر منع الفليكر في الخطوط */
     body {
-      background-color: #FAFAFA;
+      inset: 0; overflow: hidden;
+      margin: 0; padding: 0;
+      position: fixed;
+      user-select: none;
+      touch-action: none;
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
-    /* إخفاء شريط التحميل الافتراضي لتقليل الجهد البصري */
-    .flutter-loader {
+
+    /* لودر جذاب يظهر فوراً للمستخدم لمنع الشاشة البيضاء */
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .loader {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 5px solid #2196F3;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    .logo-text {
+      font-family: sans-serif;
+      font-weight: bold;
+      font-size: 24px;
+      color: #2196F3;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* إخفاء اللودر عند تحميل التطبيق */
+    .main-content {
       display: none;
     }
   </style>
 </head>
 <body>
+  <div id="loading-indicator" class="loading">
+    <div class="loader"></div>
+    <div class="logo-text">Shop Local</div>
+    <p style="color: #888; font-size: 14px; margin-top: 10px;">جاري تشغيل المتجر...</p>
+  </div>
+
   <script>
     {{flutter_bootstrap_js}}
 
     window.addEventListener('load', function(ev) {
-      // 🚀 تهيئة متقدمة لفرض الـ HTML Renderer وتعطيل CanvasKit تماماً
       _flutter.loader.load({
         onEntrypointLoaded: async function(engineInitializer) {
           const appRunner = await engineInitializer.initializeEngine({
             renderer: "html",
-            useColorEmoji: false,
           });
 
-          // 🛠️ منع المتصفح من استهلاك الذاكرة في تحميل خطوط Noto المفقودة
-          if (window.flutterCanvasKit) {
-             window.flutterCanvasKit.fontLoading = false;
+          // إزالة اللودر قبل تشغيل التطبيق بقليل
+          var loader = document.getElementById('loading-indicator');
+          if (loader) {
+            loader.remove();
           }
 
           await appRunner.runApp();
