@@ -179,7 +179,7 @@ class AboutScreen extends StatelessWidget {
                         icon: Icons.payments,
                         color: Colors.indigo,
                         title: 'رسوم التوصيل',
-                        subtitle: '${config.deliveryFee} ريال', // 👈 عرض الرقم فقط
+                        subtitle: '${config.deliveryFee.toStringAsFixed(2)} ريال', // 👈 عرض الرقم بتنسيق احترافي
                       ),
                     ],
                   ),

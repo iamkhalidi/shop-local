@@ -3,7 +3,7 @@ class StoreConfigModel {
   final String openTime;
   final String closeTime;
   final String callNumber;
-  final int deliveryFee;
+  final double deliveryFee;
   final String deliveryInfo;
   final String email;
   final String locationUrl;
@@ -29,7 +29,7 @@ class StoreConfigModel {
       openTime: (json['openTime'] ?? '').toString(),
       closeTime: (json['closeTime'] ?? '').toString(),
       callNumber: (json['callNumber'] ?? '').toString(),
-      deliveryFee: json['deliveryFee'] is int ? json['deliveryFee'] : (json['deliveryFee'] as num?)?.toInt() ?? 0,
+      deliveryFee: (json['deliveryFee'] as num?)?.toDouble() ?? 0.0,
       deliveryInfo: (json['deliveryInfo'] ?? '').toString(),
       email: (json['email'] ?? '').toString(),
       locationUrl: (json['locationUrl'] ?? '').toString(),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../services/store_service.dart';
 import '../../orders/controller/orders_controller.dart';
 import '../controller/cart_controller.dart';
 import '../model/cart_item_model.dart';
@@ -96,29 +97,56 @@ class CartScreen extends StatelessWidget {
                   )
                 ],
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('إجمالي المنتجات:', style: TextStyle(fontSize: 15, color: Colors.grey)),
-                      Text('${controller.totalItemsCount}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('المبلغ الإجمالي:', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
-                      Text('${controller.totalPrice.toStringAsFixed(2)} ريال', style: const TextStyle(fontSize: 19, color: Colors.blue, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: Obx(() {
-                      return ordersController.isLoading.value
+              child: Obx(() {
+                final double itemsPrice = controller.totalPrice;
+                final double deliveryFee = (StoreService.instance.storeConfig.value?.deliveryFee ?? 0).toDouble();
+                final double grandTotal = itemsPrice + deliveryFee;
+
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('إجمالي المنتجات:', style: TextStyle(fontSize: 15, color: Colors.grey)),
+                        Text('${controller.totalItemsCount}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('مجموع السلة:', style: TextStyle(fontSize: 15, color: Colors.grey)),
+                        Text('${itemsPrice.toStringAsFixed(2)} ريال', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('رسوم التوصيل:', style: TextStyle(fontSize: 15, color: Colors.grey)),
+                        Text(
+                          deliveryFee > 0 ? '${deliveryFee.toStringAsFixed(2)} ريال' : 'مجاني',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: deliveryFee > 0 ? Colors.black87 : Colors.green,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Divider(height: 24, thickness: 0.5),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('المبلغ الإجمالي:', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                        Text('${grandTotal.toStringAsFixed(2)} ريال', style: const TextStyle(fontSize: 19, color: Colors.blue, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ordersController.isLoading.value
                           ? const Center(child: CircularProgressIndicator())
                           : ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -129,15 +157,15 @@ class CartScreen extends StatelessWidget {
                           elevation: 0,
                         ),
                         onPressed: () {
-                          ordersController.placeOrder(deliveryFee: 0.0);
+                          ordersController.placeOrder(deliveryFee: deliveryFee);
                         },
                         child: const Text('تأكيد الطلب الآن', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                      );
-                    }),
-                  ),
-                  const SizedBox(height: 75),
-                ],
-              ),
+                      ),
+                    ),
+                    const SizedBox(height: 75),
+                  ],
+                );
+              }),
             ),
           ],
         );

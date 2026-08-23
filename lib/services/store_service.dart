@@ -17,22 +17,26 @@ class StoreService extends GetxService {
     fetchStoreConfig();
   }
 
-  Future<void> fetchStoreConfig() async {
+  void fetchStoreConfig() {
     try {
       isLoading.value = true;
-      final doc = await _firestore.collection('store_profile').doc('config').get();
-
-      if (doc.exists && doc.data() != null) {
-        final config = StoreConfigModel.fromFirestore(doc.data()!);
-        storeConfig.value = config;
-        storeName.value = config.storeName;
-        print("✅ Store Config Loaded Successfully: ${config.storeName}");
-      } else {
-        print("⚠️ Store Config Document NOT FOUND at 'store_profile/config'");
-      }
+      // 🚀 تحويل الجلب إلى مستمع مباشر (Stream) لضمان التحديث اللحظي في جميع أنحاء التطبيق
+      _firestore.collection('store_profile').doc('config').snapshots().listen((doc) {
+        if (doc.exists && doc.data() != null) {
+          final config = StoreConfigModel.fromFirestore(doc.data()!);
+          storeConfig.value = config;
+          storeName.value = config.storeName;
+          print("✅ Store Config Updated: ${config.storeName} | Fee: ${config.deliveryFee}");
+        } else {
+          print("⚠️ Store Config Document NOT FOUND at 'store_profile/config'");
+        }
+        isLoading.value = false;
+      }, onError: (e) {
+        print("❌ Stream Error in store config: $e");
+        isLoading.value = false;
+      });
     } catch (e) {
-      print("❌ Error fetching store config: $e");
-    } finally {
+      print("❌ Error initializing store config stream: $e");
       isLoading.value = false;
     }
   }
