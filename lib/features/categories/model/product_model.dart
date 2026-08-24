@@ -23,6 +23,14 @@ class ProductModel {
     required this.imageUrl,
   });
 
+  // حساب نسبة الخصم تلقائياً
+  int get discountPercentage {
+    if (hasDiscount && originalPrice > 0) {
+      return (((originalPrice - currentPrice) / originalPrice) * 100).round();
+    }
+    return 0;
+  }
+
   // تحويل البيانات القادمة من Firestore (Map) إلى Object
   factory ProductModel.fromJson(Map<String, dynamic> json) {
     final double original = (json['original_price'] as num?)?.toDouble() ?? 0.0;
@@ -34,7 +42,8 @@ class ProductModel {
       description: json['description'] ?? '',
       originalPrice: original,
       currentPrice: current,
-      hasDiscount: original > 0,
+      // الخصم يظهر فقط إذا كان السعر الأصلي (المشطوب) أكبر من الحالي (المعتمد)
+      hasDiscount: original > current && current > 0,
       stockQuantity: json['stock_quantity'] ?? 0,
       unitType: json['unit_type'] ?? '',
       sizeVolume: (json['size_volume'] as num?)?.toDouble() ?? 0.0,

@@ -169,6 +169,18 @@ class ProductInfoScreen extends GetView<DashboardController> {
                             decoration: TextDecoration.lineThrough
                         ),
                       ),
+                      const SizedBox(width: 10),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.redAccent,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Text(
+                          "خصم ${product.discountPercentage}%",
+                          style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                        ),
+                      ),
                     ]
                   ],
                 ),
