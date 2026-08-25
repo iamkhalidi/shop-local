@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../controller/auth_controller.dart';
 import '../../../routes/app_pages.dart';
 import '../../../services/store_service.dart';
+import '../../../core/utils/version_constants.dart';
 
 class LoginScreen extends GetView<AuthController> {
   const LoginScreen({Key? key}) : super(key: key);
@@ -146,6 +147,19 @@ class LoginScreen extends GetView<AuthController> {
                   child: const Text(
                     'تعرف على متجرنا ومعلومات التواصل',
                     style: TextStyle(color: Colors.blueGrey, fontSize: 13, decoration: TextDecoration.underline),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // 🏷️ طابع النسخة
+                Center(
+                  child: Opacity(
+                    opacity: 0.3,
+                    child: Text(
+                      'v ${AppVersion.buildDate}',
+                      style: const TextStyle(fontSize: 10, color: Colors.grey),
+                    ),
                   ),
                 ),
               ],

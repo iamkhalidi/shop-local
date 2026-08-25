@@ -14,9 +14,11 @@ class CartScreen extends StatelessWidget {
     final controller = Get.find<CartController>();
     final ordersController = Get.find<OrdersController>();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('سلة التسوق'),
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('سلة التسوق'),
         centerTitle: true,
         actions: [
           IconButton(
@@ -170,7 +172,7 @@ class CartScreen extends StatelessWidget {
           ],
         );
       }),
-    );
+    ));
   }
 
   // 🚀 بناء كارت المنتج في السلة بنظام الشبكة (Grid) متناسق مع صفحة المنتجات
@@ -229,6 +231,24 @@ class CartScreen extends StatelessWidget {
                   '${(item.price * item.quantity).toStringAsFixed(2)} ريال',
                   style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 13),
                   textAlign: TextAlign.center,
+                ),
+                
+                // عرض السعر الفردي مضروباً في الكمية بشكل احترافي
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 2),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '${item.price.toStringAsFixed(2)} ريال',
+                        style: TextStyle(color: Colors.grey[600], fontSize: 12, fontWeight: FontWeight.w500),
+                      ),
+                      Text(
+                        ' × ${item.quantity}',
+                        style: const TextStyle(color: Colors.blue, fontSize: 12, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 8),
 

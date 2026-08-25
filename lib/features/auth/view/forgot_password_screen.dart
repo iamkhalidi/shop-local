@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controller/auth_controller.dart';
+import '../../../core/utils/version_constants.dart';
 
 class ForgotPasswordScreen extends GetView<AuthController> {
   const ForgotPasswordScreen({Key? key}) : super(key: key);
@@ -90,6 +91,19 @@ class ForgotPasswordScreen extends GetView<AuthController> {
                     ),
                   ),
                 ],
+              ),
+            ),
+
+            const Spacer(),
+
+            // 🏷️ طابع النسخة
+            Center(
+              child: Opacity(
+                opacity: 0.3,
+                child: Text(
+                  'v ${AppVersion.buildDate}',
+                  style: const TextStyle(fontSize: 10, color: Colors.grey),
+                ),
               ),
             ),
           ],

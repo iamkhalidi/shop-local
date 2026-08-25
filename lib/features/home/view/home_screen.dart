@@ -10,6 +10,7 @@ import '../controller/home_controller.dart';
 import '../../../services/store_service.dart';
 import '../../favorites/controller/favorites_controller.dart'; // 👈 استيراد كنترولر المفضلة
 import '../../../core/widgets/loading_retry_widget.dart'; // 🚀 استيراد الودجت الجديد
+import '../../../core/utils/version_constants.dart';
 
 class HomeScreen extends GetView<HomeController> {
   const HomeScreen({Key? key}) : super(key: key);
@@ -335,6 +336,17 @@ class HomeScreen extends GetView<HomeController> {
               child: const Text(
                 "تطوير وتصميم: خالد",
                 style: TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.bold),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // 🏷️ طابع النسخة
+            Opacity(
+              opacity: 0.3,
+              child: Text(
+                'v ${AppVersion.buildDate}',
+                style: const TextStyle(fontSize: 10, color: Colors.grey),
               ),
             ),
           ],
